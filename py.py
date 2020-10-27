@@ -74,10 +74,10 @@ class pyData:
               #  li2.append(
               #      sp.find(attrs={'class': 'vF_detail_content'}).get_text())
                 alllist.append(dict(zip(pyData.paralist, li2)))
+
             self.pylist.extend(alllist)
         else:
             print('No Data found!')
-        print(alllist)
     def run(self):
         for i in range(1,7):
             print('正在爬取第{}页'.format(str(i)))
