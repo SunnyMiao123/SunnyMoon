@@ -14,16 +14,39 @@ class pyData:
     def __init__(self, *args, **kwargs):
         return super().__init__(*args, **kwargs)
     paralist = ['id', 'name', 'cost', 'region', 'url', 'date',
-                'depart', 'agent', 'type', 'province', 'content']
+                'depart', 'agent', 'type', 'province']
     pylist = []
     pyjson = ''
-    def beginread(pageIndex):
-        
-        website = "http://search.ccgp.gov.cn/bxsearch?searchtype=2&page_index={0}&bidSort=&buyerName=&projectId=&pinMu=&bidType=1&dbselect=bidx&kw=%E5%8C%BB%E9%99%A2%E4%BF%A1%E6%81%AF&start_time=2019%3A02%3A01&end_time=2019%3A08%3A02&timeType=6&displayZone=&zoneId=&pppStatus=0&agentName=".format(pageIndex)
-      #  print(website)
-        sourcehtml = requests.get(website).content
-        soup = BeautifulSoup(sourcehtml, 'lxml')
-        ss=soup.find('span')
+    baseUrl = 'http://search.ccgp.gov.cn/bxsearch?searchtype=1'
+    keyword = '医院信息'
+    start_time = '2020-01-01'
+    end_time = '2020-10-26'
+    page_num = 1
+    params = {
+        'searchtype': '2',
+        'page_index': page_num,
+        'bidSort': '0',
+        'pinMu': '0',
+        'bidType': '0',
+        'kw': keyword,
+        'start_time': start_time,
+        'end_time': end_time,
+        'timeType': '6'
+    }
+    headers = {
+        'Cookie': 'JSESSIONID=EgPd86-6id_etA2QDV31Kks3FrNs-4gwHMoSmEZvnEktWIakHbV3!354619916; Hm_lvt_9f8bda7a6bb3d1d7a9c7196bfed609b5=1545618390; Hm_lpvt_9f8bda7a6bb3d1d7a9c7196bfed609b5=1545618390; td_cookie=2144571454; Hm_lvt_9459d8c503dd3c37b526898ff5aacadd=1545611064,1545618402,1545618414; Hm_lpvt_9459d8c503dd3c37b526898ff5aacadd=1545618495',
+        'Host': 'search.ccgp.gov.cn',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3141.8 Safari/537.36'
+    }
+
+    def beginread(self):
+        response = requests.get(
+            self.baseUrl, headers=self.headers, params=self.params)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'lxml')
+        else:
+            soup = BeautifulSoup(response.content, 'lxml')
+        ss = soup.find('span')
         li = soup.find('ul', attrs={'class': 'vT-srch-result-list-bid'})
         if li != None:
             alllist = []
@@ -48,23 +71,22 @@ class pyData:
                     '|')[2].split('\n')[0].strip())
                 li2.append(i.find('span').find('strong').get_text().strip())
                 li2.append(i.find('span').find('a').get_text().strip())
-                li2.append(
-                    sp.find(attrs={'class': 'vF_detail_content'}).get_text())
+              #  li2.append(
+              #      sp.find(attrs={'class': 'vF_detail_content'}).get_text())
                 alllist.append(dict(zip(pyData.paralist, li2)))
-          #  print(alllist)
-            pyData.pylist.extend(alllist)
-         #   print(len(alllist))
+            self.pylist.extend(alllist)
         else:
             print('No Data found!')
-    def getList():
-        for tar in range(1,25):
-            pyData.beginread(tar)
-        print(len(pyData.pylist))
-def main():
-    for tar in range(1,25):
-        pyData.beginread(tar)
-    print(len(pyData.pylist))
+        print(alllist)
+    def run(self):
+        for i in range(1,7):
+            print('正在爬取第{}页'.format(str(i)))
+            self.params['page_index']=i
+            self.beginread()
 
+def main():
+    pyd=pyData()
+    pyd.run()
 
 
 if __name__ == '__main__':
