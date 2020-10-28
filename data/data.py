@@ -13,7 +13,7 @@ class Hospital:
     districts=[]
     hoslist=[]
     columns=['name','location','level','province','method','website']
-    def getHospitalList():
+    def getHospitalList(self):
         html=requests.get(Hospital.website).content
         soup=BeautifulSoup(html,'lxml')
         topic=soup.find(id='toc').findAll('ul')[0].findAll('li',class_='toclevel-2')
