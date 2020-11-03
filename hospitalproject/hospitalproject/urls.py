@@ -19,5 +19,6 @@ import hospitalproject.views as view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('hello/',view.hello)
+    path('hello/',view.hello),
+    path('pydata',view.dataspy)
 ]
