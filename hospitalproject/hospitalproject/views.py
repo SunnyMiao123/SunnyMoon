@@ -17,3 +17,5 @@ def hello(request):
 
 def dataspy(request):
     return render(request,'data.html')
+def datashow(request):
+    return render(request,'datashow.html')
