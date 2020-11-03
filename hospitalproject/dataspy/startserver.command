@@ -1,0 +1,1 @@
+mongod --dbpath /users/sunmiao/mongodb/data/
