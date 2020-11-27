@@ -3,16 +3,16 @@
     "python.testing.pytestArgs": [
         "hospitalproject"
     ],
-    "python.testing.unittestEnabled": false,
+    "python.testing.unittestEnabled": true,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true,
+    "python.testing.pytestEnabled": false,
     "db":"mongodb",
     "host":"127.0.0.1",
     "port": "27017",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        ".",
+        "./hospitalproject",
         "-p",
         "*test.py"
     ],
