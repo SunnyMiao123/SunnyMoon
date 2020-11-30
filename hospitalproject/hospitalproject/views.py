@@ -23,15 +23,10 @@ for target in source:
 cols = [t['_id'] for t in list]
 vals = [t['value']for t in list]
 
-projects = database.get_collection('projects')
-p = projects.find_one()
-print(type(datetime.datetime.strptime(p['date'], '%Y.%m.%d %H:%M:%S')))
-
-
 tasks = database.get_collection('tasks')
-t = tasks.find_one()
-
-print(t)
+tasksdata=[]
+for t in tasks.find():
+    tasksdata.append(t)
 
 #i = projects.update_many({},{'$set':{'depart':str.replace('depart','采购人：','')}})
 
@@ -53,7 +48,7 @@ def hello(request):
 
 
 def dataspy(request):
-    return render(request, 'data.html')
+    return render(request, 'data.html',{'tasksdata':tasksdata})
 
 
 def datashow(request):
