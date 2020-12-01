@@ -60,12 +60,12 @@ class pyData:
                 sp = BeautifulSoup(requests.get(web).content, 'lxml')
                 ys = ''
                 region = ''
-                if sp.find('table')!=None:
+                if sp.find('table') != None:
                     for tt in sp.find('table').find_all('td', string=re.compile('金额')):
                         ys = tt.parent.find_all('td')[1].get_text()
                     for tt in sp.find('table').find_all('td', string=re.compile('行政区域')):
                         region = tt.parent.find_all('td')[1].get_text()
-                li2.append(ys)           
+                li2.append(ys)
                 li2.append(region)
                 li2.append(i.find('a')['href'])
                 li2.append(i.find('span').get_text().split('|')[0].strip())
@@ -78,10 +78,10 @@ class pyData:
               #      sp.find(attrs={'class': 'vF_detail_content'}).get_text())
                 alllist.append(dict(zip(pyData.paralist, li2)))
             jsonstr = json.dumps(alllist)
-            client=pymongo.MongoClient(host='127.0.0.1',port=27017)
-            db=client['data']
-            collection=db['projects']
-            i=collection.insert_many(alllist)
+            client = pymongo.MongoClient(host='127.0.0.1', port=27017)
+            db = client['data']
+            collection = db['projects']
+            i = collection.insert_many(alllist)
             print('插入{}行……'.format(len(i.inserted_ids)))
          #   self.pylist.extend(alllist)
         else:
@@ -102,3 +102,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+def openurl(self, baseurl, params, header):
+    response = requests.get(url=baseurl, params=params, header=header)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content,'lxml')
+    else:
+        print()
