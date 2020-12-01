@@ -16,7 +16,8 @@
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
     </script>
     <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
-    <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+        rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <title>数据抓取工具</title>
 </head>
@@ -45,6 +46,25 @@
             </form>
         </nav>
     </header>
+    <div id="model-del" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="/pydata/deletetask/" method="POST">
+                    {%csrf_token%}
+                    <input type="hidden" id="taskid" name="taskid" value="">
+                    <div class="modal-body">
+                        <p>确认删除么？</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">确认</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div id="modalcenter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -55,7 +75,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="." method="post">
+                <form action="/pydata/addtask/" method="post">
                     {%csrf_token%}
                     <div class="modal-body">
                         <div class="container">
@@ -81,7 +101,8 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="form-group">
-                                        <textarea id="my-textarea" class="form-control" name="keyword" rows="3"></textarea>
+                                        <textarea id="my-textarea" class="form-control" name="keyword"
+                                            rows="3"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -94,11 +115,11 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                         <button type="submit" class="btn btn-primary">执行</button>
-    
+
                     </div>
                 </form>
-                
-        
+
+
             </div>
         </div>
     </div>
@@ -117,7 +138,7 @@
                         <th scope="col">日期</th>
                         <th scope="col">抓取数量</th>
                         <th scope="col">时间范围</th>
-                        <th scope="col">数量分布</th>
+                        <th scope="col">关键词</th>
                         <th scope="col">操作</th>
                     </tr>
                 </thead>
@@ -127,18 +148,26 @@
                         <th scope="row">{{item.taskid}}</th>
                         <td>{{item.date}}</td>
                         <td><a href=#>{{item.file_num}}</a></td>
-                        <td>{{item.begin_time|date:"Y-m-d"}} ~ {{item.end_time|date:"Y-m-d"}}</td>
+                        <td>{{item.begin_time}} ~ {{item.end_time}}</td>
                         <td>
-
+                            {{item.keyword}}
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-link" style="margin:0">
+                            <button id="btn-{{item.taskid}}" type="button" class="btn btn-sm btn-link" style="margin:0" data-toggle="modal"
+                                data-target="#model-del" onclick="Value('{{item.taskid}}')">
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cloud-arrow-down-fill"
                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd"
                                         d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 6.854l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5a.5.5 0 0 1 1 0v3.793l1.146-1.147a.5.5 0 0 1 .708.708z" />
                                 </svg>
                             </button>
+                            <script>
+                                function Value(id){
+                                    
+                                    var dat= document.getElementById('taskid')
+                                    dat.setAttribute('value',id)
+                                }
+                            </script>
                             <button type="button" class="btn btn-sm btn-link" style="margin:0em">
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-collection-fill"
                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">

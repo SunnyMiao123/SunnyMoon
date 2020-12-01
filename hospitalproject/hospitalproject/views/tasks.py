@@ -4,6 +4,7 @@ import pymongo
 import datetime
 from django import forms
 from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 
 class input_form(forms.Form):
     starttime = forms.DateField()
@@ -23,27 +24,35 @@ def gettasksdata():
 
 
 def deletetask(request):
+    print(request)
     if(request.method == "POST"):
-        delid = request.POST['id']
+        delid = request.POST['taskid']
         tasks = database.get_collection('tasks')
         tasks.delete_one({'taskid':delid})
     return render(request, 'data.html', {'tasksdata': gettasksdata()})
 
 
-def dataspy(request):
-    if(request.method == "POST"):
+def showalltasks(request):
+    """
+    显示所有已经执行的计划任务
+    """
+    return render(request, 'data.html', {'tasksdata': gettasksdata()})
+
+
+def addtask(request):
+    """
+    POST请求，增加一个计划任务
+    """
+    if (request.method == 'POST'):
         logform = input_form()
         starttime = request.POST['starttime']
         endtime = request.POST['endtime']
         keyword = request.POST['keyword']
         tasks = database.get_collection('tasks')
         paras = ['taskid', 'begin_time',
-                 'end_time', 'file_num', 'date', 'state']
+                 'end_time', 'file_num','keyword', 'date', 'state']
         co = [datetime.datetime.now().strftime('%Y%m%d')+'-001', starttime,
-              endtime, 0, datetime.datetime.now().strftime('%Y-%m-%d'), 'Open']
+              endtime, 0, keyword ,datetime.datetime.now().strftime('%Y-%m-%d'), 'Open']
         one = dict(zip(paras, co))
         tasks.insert_one(one)
-        return render(request, 'data.html', {'tasksdata': gettasksdata()})
-    else:
-
-        return render(request, 'data.html', {'tasksdata': gettasksdata()})
+    return redirect('/pydata/')

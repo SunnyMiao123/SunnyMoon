@@ -15,13 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import hospitalproject.views.views as view
+import hospitalproject.views.home as view
 import hospitalproject.views.tasks as tasks
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',view.hello),
-    path('pydata/',tasks.dataspy),
+    path('pydata/',tasks.showalltasks),
     path('datashow/',view.datashow),
-    path('pydata/deletetask/', tasks.deletetask)
+    path('pydata/deletetask/', tasks.deletetask),
+    path('pydata/addtask/',tasks.addtask)
 ]
