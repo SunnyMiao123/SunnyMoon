@@ -3,7 +3,7 @@
     "python.testing.pytestArgs": [
         "hospitalproject"
     ],
-    "python.testing.unittestEnabled": true,
+    "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": false,
     "db":"mongodb",
@@ -16,4 +16,5 @@
         "-p",
         "*test.py"
     ],
+    "python.testing.promptToConfigure": false,
 }

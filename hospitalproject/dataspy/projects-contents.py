@@ -80,7 +80,7 @@ class pyData:
             jsonstr = json.dumps(alllist)
             client = pymongo.MongoClient(host='127.0.0.1', port=27017)
             db = client['data']
-            collection = db['projects']
+            collection = db['projects_new']
             i = collection.insert_many(alllist)
             print('插入{}行……'.format(len(i.inserted_ids)))
          #   self.pylist.extend(alllist)
@@ -107,6 +107,6 @@ if __name__ == '__main__':
 def openurl(self, baseurl, params, header):
     response = requests.get(url=baseurl, params=params, header=header)
     if response.status_code == 200:
-        soup = BeautifulSoup(response.content,'lxml')
+        return BeautifulSoup(response.content,'lxml')
     else:
         print()
