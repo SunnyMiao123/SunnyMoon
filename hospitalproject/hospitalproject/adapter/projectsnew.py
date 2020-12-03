@@ -88,7 +88,7 @@ class projectsdata:
         else:
             raise BaseException()
 
-    def CatchAll(self, begintime, endtime, keyword):
+    def CatchAll(self, begintime, endtime, keyword,taskid):
         """
         docstring
         """
@@ -133,7 +133,7 @@ class projectsdata:
                     typ = child.find('span').find('strong').get_text().strip()
                     province = child.find('span').find('a').get_text().strip()
                     instance = {'projectid': tid, 'name': name,
-                                'cost': cost, 'region': region, 'url': url, 'date': date, 'depart': depart, 'agent':agent,'type': typ, 'province': province,'html':html}
+                                'cost': cost, 'region': region, 'url': url, 'date': date, 'depart': depart, 'agent':agent,'type': typ, 'province': province,'taskid':taskid,'html':html}
                     retlist.append(instance)
             else:
                 return None
@@ -145,12 +145,12 @@ if __name__ == "__main__":
     str = '￥80.400000 万元（人民币）'
     print(decimal.Decimal(re.findall(r"\d*[.]\d*", str)[0]))
     """
-    
+    """  
     data = projectsdata()
     lis = data.CatchAll('2020:11:01', '2020:11:11', '医疗信息')
     print(data.save(lis))
     
-
+    """
   #  data = '2020.11.11 16:28:15'
 
  #   print(re.match(re.compile(r"^[0-9]{4}.[0-9]{2}.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),data))

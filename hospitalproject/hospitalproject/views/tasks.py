@@ -5,6 +5,11 @@ import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+import sys
+sys.path.append('/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/hospitalproject/adapter')
+import os
+import projectsnew as project
+
 
 class input_form(forms.Form):
     starttime = forms.DateField()
@@ -29,15 +34,35 @@ def deletetask(request):
         delid = request.POST['taskid']
         tasks = database.get_collection('tasks')
         tasks.delete_one({'taskid':delid})
-    return render(request, 'data.html', {'tasksdata': gettasksdata()})
+    return render(request, 'task-display.html', {'tasksdata': gettasksdata()})
 
 
 def showalltasks(request):
     """
     显示所有已经执行的计划任务
     """
-    return render(request, 'data.html', {'tasksdata': gettasksdata()})
+    return render(request, 'task-display.html', {'tasksdata': gettasksdata()})
 
+def gettodayMaxsort(collection):
+    """
+    获取当日最大流水号
+    """
+    line = collection.aggregate(
+        [{
+               '$match':{
+                   'date':datetime.datetime.now().strftime('%Y-%m-%d')
+               }},
+               {'$group' :{
+                   '_id':'$date',
+                   'max':{'$max':"$sort"}
+               }}
+           ]
+    )
+    li = [t['max'] for t in line]
+    ret = 1
+    if len(li) > 0:         
+        ret = li[0]+1
+    return ret
 
 def addtask(request):
     """
@@ -49,10 +74,15 @@ def addtask(request):
         endtime = request.POST['endtime']
         keyword = request.POST['keyword']
         tasks = database.get_collection('tasks')
+   
+        todaysort = gettodayMaxsort(tasks)
+        id = datetime.datetime.now().strftime('%Y%m%d')+"-"+str(todaysort).zfill(3)
         paras = ['taskid', 'begin_time',
-                 'end_time', 'file_num','keyword', 'date', 'state']
-        co = [datetime.datetime.now().strftime('%Y%m%d')+'-001', starttime,
-              endtime, 0, keyword ,datetime.datetime.now().strftime('%Y-%m-%d'), 'Open']
+                 'end_time', 'file_num','keyword', 'date', 'state','sort']
+        co = [id, starttime,
+              endtime, 0, keyword ,datetime.datetime.now().strftime('%Y-%m-%d'), 'Open',todaysort]
         one = dict(zip(paras, co))
         tasks.insert_one(one)
+        je = project.projectsdata()
+        print(je.CatchAll('2020.10.01','2020.10.11','医院信息',id))
     return redirect('/pydata/')
