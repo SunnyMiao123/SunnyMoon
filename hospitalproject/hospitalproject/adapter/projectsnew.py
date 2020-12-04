@@ -92,16 +92,18 @@ class projectsdata:
         """
         docstring
         """
-        result = self.pageBaseData(
+        print('111')
+        result =  self.pageBaseData(
             begintime=begintime, endtime=endtime, keyword=keyword, pageindex=0)
         maxpage = int(result[2])
+        print(maxpage)
         retlist = []
         for i in range(1, maxpage+1):
             if i == 1:
                 temp = result[0]
             else:
                 temp = self.pageBaseData(
-                    begintime=begintime, endtime=endtime, keyword=keyword, pageindex=i)[0]
+                begintime=begintime, endtime=endtime, keyword=keyword, pageindex=i)[0]
             li = temp.find('ul', attrs={'class': 'vT-srch-result-list-bid'})
             if li != None:
                 for child in li.find_all('li'):
@@ -137,7 +139,14 @@ class projectsdata:
                     retlist.append(instance)
             else:
                 return None
+        print(retlist)
         return retlist
+    def CatchAllAndSave(self,begintime,endtime,keyword,taskid):
+        """
+        docstring
+        """
+        lis = self.CatchAll(begintime= begintime,endtime=endtime,keyword= keyword,taskid= taskid)
+        return self.save(lis)
 
 
 if __name__ == "__main__":
@@ -145,12 +154,12 @@ if __name__ == "__main__":
     str = '￥80.400000 万元（人民币）'
     print(decimal.Decimal(re.findall(r"\d*[.]\d*", str)[0]))
     """
-    """  
-    data = projectsdata()
-    lis = data.CatchAll('2020:11:01', '2020:11:11', '医疗信息')
-    print(data.save(lis))
-    
     """
+    data = projectsdata()
+    lis = data.CatchAllAndSave('2020:10:01', '2020:10:11', '医院信息','2')
+    print(data.save(lis))
+    """
+
   #  data = '2020.11.11 16:28:15'
 
  #   print(re.match(re.compile(r"^[0-9]{4}.[0-9]{2}.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),data))

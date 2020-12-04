@@ -5,16 +5,22 @@ import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+import threading
 import sys
 sys.path.append('/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/hospitalproject/adapter')
 import os
 import projectsnew as project
 
-
 class input_form(forms.Form):
-    starttime = forms.DateField()
-    endtime = forms.DateField()
-    keyword = forms.CharField()
+    starttime = forms.CharField(
+        required= True,
+    )
+    endtime = forms.CharField(
+        required= True,
+    )
+    keyword = forms.CharField(
+        required = True,
+    )
 
 client = pymongo.MongoClient(host='127.0.0.1', port=27017)
 list = []
@@ -64,25 +70,36 @@ def gettodayMaxsort(collection):
         ret = li[0]+1
     return ret
 
+
 def addtask(request):
     """
     POST请求，增加一个计划任务
     """
     if (request.method == 'POST'):
-        logform = input_form()
-        starttime = request.POST['starttime']
-        endtime = request.POST['endtime']
-        keyword = request.POST['keyword']
-        tasks = database.get_collection('tasks')
+        logform = input_form(request.POST)
+        if logform.is_valid():
+            starttime = request.POST['starttime']
+            endtime = request.POST['endtime']
+            keyword = request.POST['keyword']
+            tasks = database.get_collection('tasks')
    
-        todaysort = gettodayMaxsort(tasks)
-        id = datetime.datetime.now().strftime('%Y%m%d')+"-"+str(todaysort).zfill(3)
-        paras = ['taskid', 'begin_time',
+            todaysort = gettodayMaxsort(tasks)
+            id = datetime.datetime.now().strftime('%Y%m%d')+"-"+str(todaysort).zfill(3)
+            paras = ['taskid', 'begin_time',
                  'end_time', 'file_num','keyword', 'date', 'state','sort']
-        co = [id, starttime,
+            co = [id, starttime,
               endtime, 0, keyword ,datetime.datetime.now().strftime('%Y-%m-%d'), 'Open',todaysort]
-        one = dict(zip(paras, co))
-        tasks.insert_one(one)
+            one = dict(zip(paras, co))
+            tasks.insert_one(one)
+        return redirect('/pydata/')
+ 
+        
+        """
         je = project.projectsdata()
-        print(je.CatchAll('2020.10.01','2020.10.11','医院信息',id))
-    return redirect('/pydata/')
+        t = threading.Thread(target= je.CatchAllAndSave,args=('2020:10:01','2020:10:11','医院信息',id))
+        t.start()
+        """
+        
+                
+    
+

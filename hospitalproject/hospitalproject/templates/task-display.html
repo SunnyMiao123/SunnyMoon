@@ -1,3 +1,4 @@
+{%extends 'base.html'%}
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -25,29 +26,7 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="../">主页</a>
-            <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse" aria-controls="my-nav"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div id="my-nav" class="collapse navbar-collapse">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">爬取 <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" tabindex="-1" aria-disabled="true">展示</a>
-                    </li>
-                </ul>
-            </div>
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </nav>
-    </header>
+    {%block content%}
     <div id="model-del" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -77,7 +56,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="/pydata/addtask/" method="post">
+                <form action="/pydata/addtask/" method="post" id="tasktake">
                     {%csrf_token%}
                     <div class="modal-body">
                         <div class="container">
@@ -86,20 +65,8 @@
                                     <label for="starttime">开始日期：</lable>
                                 </div>
                                 <div class="col-sm-8">
-                                    <div class='input-group date' id='starttime'>
-                                        <input type='text' class="form-control" />
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                    </div>
-                                    <script>
-                                        $('#starttime').datetimepicker(
-                                            {
-                                                format:'YYYY-MM-DD',
-                                                locale:moment.locale('zh-cn')
-                                            }
-                                        )
-                                    </script>
+                                    <input type="date" class="form-control" name="starttime" id="starttime">
+                                    
                                 </div>
                             </div>
                             <div class="row" style="padding : .3em">
@@ -121,16 +88,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <p>任务日志</p>
-                                <textarea name="" id="tasklog" cols="30" rows="10" class="form-control"></textarea>
-                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                        <button type="submit" class="btn btn-primary">执行</button>
-
+                        <button type="submit" id="submitbtn" class="btn btn-primary">执行</button>
+                        
                     </div>
                 </form>
 
@@ -154,6 +117,7 @@
                         <th scope="col">抓取数量</th>
                         <th scope="col">时间范围</th>
                         <th scope="col">关键词</th>
+                        <th scope="col">状态</th>
                         <th scope="col">操作</th>
                     </tr>
                 </thead>
@@ -166,6 +130,9 @@
                         <td>{{item.begin_time}} ~ {{item.end_time}}</td>
                         <td>
                             {{item.keyword}}
+                        </td>
+                        <td>
+                            {{item.state}}
                         </td>
                         <td>
                             <button id="btn-{{item.taskid}}" type="button" class="btn btn-sm btn-link" style="margin:0" data-toggle="modal"
@@ -200,6 +167,7 @@
             </table>
         </div>
     </div>
+    {%endblock%}
 </body>
 
 </html>
