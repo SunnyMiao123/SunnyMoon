@@ -40,7 +40,7 @@ def deletetask(request):
         delid = request.POST['taskid']
         tasks = database.get_collection('tasks')
         tasks.delete_one({'taskid':delid})
-    return render(request, 'task-display.html', {'tasksdata': gettasksdata()})
+    return redirect('/pydata/')
 
 
 def showalltasks(request):
