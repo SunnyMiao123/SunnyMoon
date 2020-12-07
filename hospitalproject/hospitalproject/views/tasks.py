@@ -6,13 +6,17 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 import threading
+from django.core import serializers 
+import json
 import sys
+from bson import json_util
 sys.path.append('/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/hospitalproject/adapter')
 import os
 import projectsnew as project
+from django.views.decorators.csrf import csrf_exempt
 
 class input_form(forms.Form):
-    starttime = forms.CharField(
+    begintime = forms.CharField(
         required= True,
     )
     endtime = forms.CharField(
@@ -42,6 +46,11 @@ def deletetask(request):
         tasks.delete_one({'taskid':delid})
     return redirect('/pydata/')
 
+def displayalltasks(requst):
+    tasks= gettasksdata()
+
+    response=json.dumps(tasks,default=json_util.default)
+    return HttpResponse(response)
 
 def showalltasks(request):
     """
@@ -70,30 +79,28 @@ def gettodayMaxsort(collection):
         ret = li[0]+1
     return ret
 
-
+@csrf_exempt
 def addtask(request):
     """
     POST请求，增加一个计划任务
     """
     if (request.method == 'POST'):
-        logform = input_form(request.POST)
-        if logform.is_valid():
-            starttime = request.POST['starttime']
-            endtime = request.POST['endtime']
-            keyword = request.POST['keyword']
-            tasks = database.get_collection('tasks')
-   
-            todaysort = gettodayMaxsort(tasks)
-            id = datetime.datetime.now().strftime('%Y%m%d')+"-"+str(todaysort).zfill(3)
-            paras = ['taskid', 'begin_time',
+        jsonfile = json.loads(request.body)
+
+        starttime = jsonfile['begintime']
+        endtime = jsonfile['endtime']
+        keyword = jsonfile['keyword']
+        tasks = database.get_collection('tasks')
+            
+        todaysort = gettodayMaxsort(tasks)
+        id = datetime.datetime.now().strftime('%Y%m%d')+"-"+str(todaysort).zfill(3)
+        paras = ['taskid', 'begin_time',
                  'end_time', 'file_num','keyword', 'date', 'state','sort']
-            co = [id, starttime,
+        co = [id, starttime,
               endtime, 0, keyword ,datetime.datetime.now().strftime('%Y-%m-%d'), 'Open',todaysort]
-            one = dict(zip(paras, co))
-            tasks.insert_one(one)
-        return redirect('/pydata/')
- 
-        
+        one = dict(zip(paras, co))
+        tasks.insert_one(one)
+        return HttpResponse('Success')     
         """
         je = project.projectsdata()
         t = threading.Thread(target= je.CatchAllAndSave,args=('2020:10:01','2020:10:11','医院信息',id))

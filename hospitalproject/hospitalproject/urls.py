@@ -24,5 +24,6 @@ urlpatterns = [
     path('pydata/',tasks.showalltasks),
     path('datashow/',view.datashow),
     path('pydata/deletetask/', tasks.deletetask),
-    path('pydata/addtask/',tasks.addtask)
+    path('pydata/addtask/',tasks.addtask),
+    path('pydata/displayalltasks/',tasks.displayalltasks)
 ]
