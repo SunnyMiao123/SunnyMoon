@@ -90,13 +90,14 @@ class projectsdata:
 
     def CatchAll(self, begintime, endtime, keyword,taskid):
         """
-        docstring
+        获取全部数据
         """
-        print('111')
+        print('------Begin Python Service！-------')
         result =  self.pageBaseData(
-            begintime=begintime, endtime=endtime, keyword=keyword, pageindex=0)
+            begintime=begintime, endtime=endtime, keyword=keyword, pageindex=1)
         maxpage = int(result[2])
-        print(maxpage)
+        docnum = int(result[1])
+        print('本次关键字【{}】下共获取到 {} 个数据，分{}页'.format(keyword,docnum,maxpage))
         retlist = []
         for i in range(1, maxpage+1):
             if i == 1:
@@ -140,13 +141,16 @@ class projectsdata:
             else:
                 return None
         print(retlist)
-        return retlist
+        return retlist,docnum
     def CatchAllAndSave(self,begintime,endtime,keyword,taskid):
         """
         docstring
         """
         lis = self.CatchAll(begintime= begintime,endtime=endtime,keyword= keyword,taskid= taskid)
-        return self.save(lis)
+        save = self.save(lis[0])
+
+        print('----爬取完成----')
+        return save,lis[1]
 
 
 if __name__ == "__main__":

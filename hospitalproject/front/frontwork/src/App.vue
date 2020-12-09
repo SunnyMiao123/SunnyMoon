@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="maincontainer">
     <el-header id="nav-header">
       <el-menu
         :default-active="activeIndex"

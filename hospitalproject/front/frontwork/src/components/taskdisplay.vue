@@ -15,10 +15,17 @@
           <el-button type="primary" icon="el-icon-odometer" plain
             >自动执行</el-button
           >
+          <el-button
+            type="primary"
+            icon="el-icon-refresh"
+            plain
+            @click="initTaskList"
+            >刷新</el-button
+          >
         </el-button-group>
       </el-col>
     </el-row>
-    <el-table :data="dat" stripe style="width: 100%">
+    <el-table :data.sync="dat" stripe style="width: 100%">
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>
       <el-table-column sortable prop="begin_time" label="开始时间" width="140">
@@ -31,15 +38,23 @@
       </el-table-column>
       <el-table-column prop="state" label="状态">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.state == 'Open' ? 'primary' : 'success'">{{
-            scope.row.state
-          }}</el-tag>
+          <el-tag v-if="scope.row.state=='Open'" type="primary">{{scope.row.state}}</el-tag>
+          <el-tag v-else-if="scope.row.state=='Closed'" type="success">{{scope.row.state}}</el-tag>
+          <el-tag v-else type="danger">{{scope.row.state}}</el-tag>         
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary">{{scope.row.state=='Open'?'执行':'查看'}}</el-button>
-          <el-button size="mini" type="danger">删除</el-button>
+          <el-button
+            size="mini"
+            :type="scope.row.state == 'Open' ? 'primary' : 'success'"
+            @click="onexecute(scope.row)"
+            :loading="scope.row.loading"
+            >{{ scope.row.state == "Open" ? "执行" : "查看" }}</el-button
+          >
+          <el-button size="mini" type="danger" @click="onDel(scope.row.taskid)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -48,7 +63,12 @@
       :visible.sync="dialogFormVisible"
       width="500px"
     >
-      <el-form :model="formcreate" label-width="80px" :rules="rules" ref="formcreate">
+      <el-form
+        :model="formcreate"
+        label-width="80px"
+        :rules="rules"
+        ref="formcreate"
+      >
         <el-form-item label="时间范围" required>
           <el-col :span="11" style="text-align: center">
             <el-form-item prop="begintime">
@@ -109,14 +129,15 @@ export default {
         keyword: { required: true, message: "请输入关键词", trigger: "blur" },
       },
       dialogFormVisible: false,
+      loading: false,
     };
   },
 
-  mounted: function () {
+  created : function () {
     this.initTaskList();
   },
   methods: {
-    initTaskList: function () {
+    initTaskList() {
       var that = this;
       this.$axios
         .request({
@@ -124,16 +145,60 @@ export default {
           method: "get",
         })
         .then(function (ret) {
+          ret.data.forEach((t) => {t.loading = false});
           that.dat = ret.data;
         });
     },
-    savetask(){    
-        this.$axios({
-            method:'post',
-            url:"http://127.0.0.1:8101/pydata/addtask/",
-            data:JSON.stringify(this.formcreate),
-            headers:{'Content-Type':'application/json'}
-        }).then(this.initTaskList())
+    onDel(taskid) {
+      var data = { taskid: taskid };
+      this.$axios({
+        method: "post",
+        url: "http://127.0.0.1:8101/pydata/deletetask/",
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      }).then(this.initTaskList());
+    },
+    onexecute(task) {
+      var taskid = task.taskid;
+      var that = this;
+      that.dat.forEach((t) => {
+        if (t.taskid == taskid && t.state == "Open") {
+          t.loading = true;
+          this.$axios({
+            method: "post",
+            url: "http://127.0.0.1:8101/pydata/beginPythonData/",
+            data: JSON.stringify({
+              begintime: task.begin_time,
+              endtime: task.end_time,
+              keyword: task.keyword,
+              taskid: task.taskid,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }).then(ret => {
+            t.loading = false;
+            console.log(ret);
+            this.initTaskList();
+            const h = this.$createElement;
+            this.$notify({
+              title: "通知信息",
+              message: h("i", { style: "color: teal" }, t.taskid+" 执行成功！"),
+            });
+            
+          }).catch(ren=>{
+              console.log(ren);
+
+          })
+
+        }
+      });
+    },
+    savetask() {
+      this.$axios({
+        method: "post",
+        url: "http://127.0.0.1:8101/pydata/addtask/",
+        data: JSON.stringify(this.formcreate),
+        headers: { "Content-Type": "application/json" },
+      }).then(this.initTaskList());
     },
     onSubmit() {
       //console.log(this.$refs['formcreate'])
@@ -157,7 +222,6 @@ export default {
         keyword: "",
       };
     },
-    checkvalid(form) {},
   },
 };
 </script>
