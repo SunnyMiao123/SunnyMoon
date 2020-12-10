@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 import hospitalproject.views.home as view
 import hospitalproject.views.tasks as tasks
+import hospitalproject.views.projects as projects
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,5 @@ urlpatterns = [
     path('pydata/addtask/',tasks.addtask),
     path('pydata/displayalltasks/',tasks.displayalltasks),
     path('pydata/beginPythonData/',tasks.beginPythonData),
+    path('pydata/projects/getall/',projects.getAllProjects),
 ]

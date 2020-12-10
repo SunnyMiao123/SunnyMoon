@@ -113,7 +113,7 @@
 export default {
   data() {
     return {
-      dat: [],
+      dat: this.initTaskList(),
       formcreate: {
         begintime: "",
         endtime: "",
@@ -129,13 +129,10 @@ export default {
         keyword: { required: true, message: "请输入关键词", trigger: "blur" },
       },
       dialogFormVisible: false,
-      loading: false,
     };
   },
 
-  created : function () {
-    this.initTaskList();
-  },
+
   methods: {
     initTaskList() {
       var that = this;

@@ -11,7 +11,7 @@
         active-text-color="#ffffff"
       >
         <el-menu-item index="1">
-          <img style="height: 30px" src="./assets/剃刀.png" />
+          <img style="height: 30px" src="./assets/数据库_配图.png" />
           <span style="padding-left: 20px; font-size: 18px"
             >政府采购-医疗信息化专题爬取</span
           >
@@ -40,7 +40,7 @@
             <i class="el-icon-menu"></i>
             <span slot="title">任务列表</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="/projects">
             <i class="el-icon-document"></i>
             <span slot="title">数据展示</span>
           </el-menu-item>
