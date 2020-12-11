@@ -24,5 +24,3 @@ def getAllProjects(request):
                       'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
     fill = json.dumps(lists, default=json_util.default)
     return HttpResponse(fill)
-
-print(decimal128.Decimal128('299.00000000'))

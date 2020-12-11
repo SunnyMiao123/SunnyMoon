@@ -97,7 +97,7 @@ class projectsdata:
             begintime=begintime, endtime=endtime, keyword=keyword, pageindex=1)
         maxpage = int(result[2])
         docnum = int(result[1])
-        print('本次关键字【{}】下共获取到 {} 个数据，分{}页'.format(keyword,docnum,maxpage))
+        print('本次关键字为【{}】,在【{}】-【{}】时间范围内共获取到 {} 个数据，分{}页'.format(keyword,begintime,endtime,docnum,maxpage))
         retlist = []
         for i in range(1, maxpage+1):
             if i == 1:
@@ -140,7 +140,6 @@ class projectsdata:
                     retlist.append(instance)
             else:
                 return None
-        print(retlist)
         return retlist,docnum
     def CatchAllAndSave(self,begintime,endtime,keyword,taskid):
         """
@@ -148,7 +147,7 @@ class projectsdata:
         """
         lis = self.CatchAll(begintime= begintime,endtime=endtime,keyword= keyword,taskid= taskid)
         save = self.save(lis[0])
-
+        print(save)
         print('----爬取完成----')
         return save,lis[1]
 
@@ -176,3 +175,4 @@ if __name__ == "__main__":
     data = {'date':datetime.datetime.strptime(data,'%Y.%m.%d %H:%M:%S')}
     c.insert(data)
     """
+print(datetime.datetime.now())

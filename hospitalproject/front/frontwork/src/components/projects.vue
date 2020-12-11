@@ -7,13 +7,13 @@
       v-el-table-infinite-scroll="load"
       v-loading="loading"
       element-loading-text="拼命加载中"
-    element-loading-spinner="el-icon-loading"
+      element-loading-spinner="el-icon-loading"
     >
       <el-table-column type="index" index="index+1"></el-table-column>
       <el-table-column
         prop="name"
         label="项目名称"
-        width="360"
+        width="350"
         show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
@@ -97,9 +97,8 @@ export default {
           resp.data.forEach((element) => {
             that.dat.push(element);
           });
-          this.loading=false;
+          this.loading = false;
         }, 1000);
-        
       });
     },
   },
