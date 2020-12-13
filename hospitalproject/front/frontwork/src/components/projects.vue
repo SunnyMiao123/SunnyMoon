@@ -1,9 +1,28 @@
 <template>
   <div class="projects" style="max-height: 600">
     <el-page-header content="查询结果"></el-page-header>
+    <el-row align="middle" class="panel" type="flex" box-shadow="0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+        <el-col span="2">
+            <p>时间范围：</p>
+        </el-col>
+      <el-col span="6">
+        <el-date-picker
+          v-model="value2"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        >
+        </el-date-picker>
+      </el-col>
+    </el-row>
     <el-table
       :data="dat"
-      height="500px"
+      height="470px"
+      id="el-proj-list"
       v-el-table-infinite-scroll="load"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -56,6 +75,26 @@
         width="260"
       ></el-table-column>
     </el-table>
+    <el-backtop
+      target=".page-component__scroll .el-scrollbar__wrap"
+      :bottom="100"
+    >
+      <div
+        style="
+           {
+            height: 100%;
+            width: 100%;
+            background-color: #f2f5f6;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            line-height: 40px;
+            color: #1989fa;
+          }
+        "
+      >
+        UP
+      </div>
+    </el-backtop>
   </div>
 </template>
 
@@ -67,6 +106,38 @@ export default {
       perpagecount: 15,
       dat: [],
       loading: false,
+      value2: "",
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+        ],
+      },
     };
   },
   mounted: function () {
@@ -98,9 +169,14 @@ export default {
             that.dat.push(element);
           });
           this.loading = false;
-        }, 1000);
+        }, 500);
       });
     },
   },
 };
 </script>
+<style scoped>
+.panel {
+  height: 70px;
+}
+</style>

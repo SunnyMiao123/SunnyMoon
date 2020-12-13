@@ -136,7 +136,9 @@ class projectsdata:
                     typ = child.find('span').find('strong').get_text().strip()
                     province = child.find('span').find('a').get_text().strip()
                     instance = {'projectid': tid, 'name': name,
-                                'cost': cost, 'region': region, 'url': url, 'date': date, 'depart': depart, 'agent':agent,'type': typ, 'province': province,'taskid':taskid,'html':html}
+                                'cost': cost, 'region': region, 'url': url, 
+                                'date': date, 'depart': depart, 'agent':agent,
+                                'type': typ, 'province': province,'taskid':taskid,'html':html}
                     retlist.append(instance)
             else:
                 return None

@@ -25,7 +25,7 @@
         </el-button-group>
       </el-col>
     </el-row>
-    <el-table :data.sync="dat" stripe style="width: 100%">
+    <el-table :data.sync="dat" stripe style="width: 100%" height="400px">
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>
       <el-table-column sortable prop="begin_time" label="开始时间" width="140">
@@ -113,7 +113,7 @@
 export default {
   data() {
     return {
-      dat: this.initTaskList(),
+      dat: [],
       formcreate: {
         begintime: "",
         endtime: "",
@@ -131,7 +131,9 @@ export default {
       dialogFormVisible: false,
     };
   },
-
+  mounted: function() {
+    this.initTaskList()
+  },
 
   methods: {
     initTaskList() {
