@@ -63,7 +63,7 @@
         label="公告时间"
         width="120"
       ></el-table-column>
-      <el-table-column prop="cost" label="预算" width="120"></el-table-column>
+      <el-table-column prop="cost" label="预算（万元）" width="120"></el-table-column>
       <el-table-column
         prop="taskid"
         label="任务编号"
