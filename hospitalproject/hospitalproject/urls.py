@@ -29,4 +29,5 @@ urlpatterns = [
     path('pydata/displayalltasks/',tasks.displayalltasks),
     path('pydata/beginPythonData/',tasks.beginPythonData),
     path('pydata/projects/getall/',projects.getAllProjects),
+    path('pydata/downloadfile/',projects.downloadfiles),
 ]

@@ -38,12 +38,16 @@
       </el-table-column>
       <el-table-column prop="state" label="状态">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.state=='Open'" type="primary">{{scope.row.state}}</el-tag>
-          <el-tag v-else-if="scope.row.state=='Closed'" type="success">{{scope.row.state}}</el-tag>
-          <el-tag v-else type="danger">{{scope.row.state}}</el-tag>         
+          <el-tag v-if="scope.row.state == 'Open'" type="primary">{{
+            scope.row.state
+          }}</el-tag>
+          <el-tag v-else-if="scope.row.state == 'Closed'" type="success">{{
+            scope.row.state
+          }}</el-tag>
+          <el-tag v-else type="danger">{{ scope.row.state }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160">
+      <el-table-column label="操作" width="270">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -51,6 +55,14 @@
             @click="onexecute(scope.row)"
             :loading="scope.row.loading"
             >{{ scope.row.state == "Open" ? "执行" : "查看" }}</el-button
+          >
+          <el-button
+            v-show="scope.row.state == 'Closed'"
+            size="mini"
+            type="success"
+            :loading="scope.row.loadingfile"
+            @click="download(scope.row)"
+            >下载文件</el-button
           >
           <el-button size="mini" type="danger" @click="onDel(scope.row.taskid)"
             >删除</el-button
@@ -131,8 +143,8 @@ export default {
       dialogFormVisible: false,
     };
   },
-  mounted: function() {
-    this.initTaskList()
+  mounted: function () {
+    this.initTaskList();
   },
 
   methods: {
@@ -144,7 +156,10 @@ export default {
           method: "get",
         })
         .then(function (ret) {
-          ret.data.forEach((t) => {t.loading = false});
+          ret.data.forEach((t) => {
+            t.loading = false;
+            t.loadingfile = false;
+          });
           that.dat = ret.data;
         });
     },
@@ -173,21 +188,24 @@ export default {
               taskid: task.taskid,
             }),
             headers: { "Content-Type": "application/json" },
-          }).then(ret => {
-            t.loading = false;
-            console.log(ret);
-            this.initTaskList();
-            const h = this.$createElement;
-            this.$notify({
-              title: "通知信息",
-              message: h("i", { style: "color: teal" }, t.taskid+" 执行成功！"),
-            });
-            
-          }).catch(ren=>{
-              console.log(ren);
-
           })
-
+            .then((ret) => {
+              t.loading = false;
+              console.log(ret);
+              this.initTaskList();
+              const h = this.$createElement;
+              this.$notify({
+                title: "通知信息",
+                message: h(
+                  "i",
+                  { style: "color: teal" },
+                  t.taskid + " 执行成功！"
+                ),
+              });
+            })
+            .catch((ren) => {
+              console.log(ren);
+            });
         }
       });
     },
@@ -211,6 +229,24 @@ export default {
           this.dialogFormVisible = true;
           return false;
         }
+      });
+    },
+    download(task) {
+      var taskid = task.taskid;
+      task.loadingfile = true;
+      this.$axios({
+        method: "GET",
+        url: "http://127.0.0.1:8101/pydata/downloadfile/",
+        params: { taskid: taskid },
+      }).then((response) => {
+        task.loadingfile = false;
+        console.log(response);
+        const h = this.$createElement;
+        this.$notify({
+          title: "通知信息",
+          message: h("i", { style: "color: teal" }, taskid + " 下载完成！"),
+        });
+        this.initTaskList()
       });
     },
     begincreatetask() {
