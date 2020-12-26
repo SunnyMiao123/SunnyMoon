@@ -4,12 +4,15 @@ import pymongo
 import datetime
 from django import forms
 from django.core.exceptions import ValidationError
+import json
 
 client = pymongo.MongoClient(host='127.0.0.1', port=27017)
 list = []
 database = client.get_database('data')
-collections = database.get_collection('hospitals')
-source = collections.aggregate([
+hoscollections = database.get_collection('hospitals')
+procollections = database.get_collection('projects')
+taskscollection = database.get_collection('tasks')
+source = hoscollections.aggregate([
     {
         '$group': {
             '_id': '$province',
@@ -29,3 +32,21 @@ def hello(request):
 
 def datashow(request):
     return render(request, 'datashow.html')
+
+def getbasenum(request):
+    """
+    docstring
+    """
+    fileTotnum = procollections.count()
+
+    hospitalTotNum = hoscollections.count()
+    tasksnum = taskscollection.count()
+    jsonfile = json.dumps({
+        'fileTotNum':fileTotnum,
+        'hosTotNum':hospitalTotNum,
+        'tasksTotNum':taskscollection.count()
+    })
+    return HttpResponse(jsonfile)
+
+if __name__ == "__main__":
+    getbasenum('')

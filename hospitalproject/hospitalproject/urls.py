@@ -30,4 +30,5 @@ urlpatterns = [
     path('pydata/beginPythonData/',tasks.beginPythonData),
     path('pydata/projects/getall/',projects.getAllProjects),
     path('pydata/downloadfile/',projects.downloadfiles),
+    path('pydata/home/getBaseNum/',view.getbasenum),
 ]

@@ -13,6 +13,7 @@ import math
 import bson.decimal128 as decimal128
 sys.path.append('..')
 import datetime
+import time
 
 
 class projectsdata:
@@ -100,6 +101,8 @@ class projectsdata:
         print('本次关键字为【{}】,在【{}】-【{}】时间范围内共获取到 {} 个数据，分{}页'.format(keyword,begintime,endtime,docnum,maxpage))
         retlist = []
         for i in range(1, maxpage+1):
+            print('----开始爬取第[{}]页-----'.format(str(i)))
+            
             if i == 1:
                 temp = result[0]
             else:
@@ -108,6 +111,7 @@ class projectsdata:
             li = temp.find('ul', attrs={'class': 'vT-srch-result-list-bid'})
             if li != None:
                 for child in li.find_all('li'):
+                    begintime = datetime.datetime.now()
                     tid = uuid.uuid1()
                     name = child.find('a').get_text().strip()
                     url = child.find('a')['href']
@@ -140,6 +144,8 @@ class projectsdata:
                                 'date': date, 'depart': depart, 'agent':agent,
                                 'type': typ, 'province': province,'taskid':taskid,'html':html}
                     retlist.append(instance)
+                    endtime = datetime.datetime.now()
+                    print(name,'耗时：',str(endtime - begintime))
             else:
                 return None
         return retlist,docnum
@@ -149,7 +155,6 @@ class projectsdata:
         """
         lis = self.CatchAll(begintime= begintime,endtime=endtime,keyword= keyword,taskid= taskid)
         save = self.save(lis[0])
-        print(save)
         print('----爬取完成----')
         return save,lis[1]
 

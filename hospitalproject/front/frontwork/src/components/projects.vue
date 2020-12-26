@@ -1,12 +1,17 @@
 <template>
   <div class="projects" style="max-height: 600">
     <el-page-header content="查询结果"></el-page-header>
-    <el-row align="middle" class="panel" type="flex" box-shadow="0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
-        <el-col span="2">
-            <p>时间范围：</p>
-        </el-col>
-      <el-col span="6">
+    <el-row
+      align="middle"
+      class="panel"
+      type="flex"
+    >
+      <el-col span="2">
+        <p>时间范围：</p>
+      </el-col>
+      <el-col span="8">
         <el-date-picker
+        size="medium"
           v-model="value2"
           type="daterange"
           align="right"
@@ -28,7 +33,7 @@
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
     >
-      <el-table-column type="index" index="index+1"></el-table-column>
+      <el-table-column type="index" index="index+1" label="#"></el-table-column>
       <el-table-column
         prop="name"
         label="项目名称"
@@ -46,6 +51,8 @@
         label="类别"
         width="120"
         show-overflow-tooltip="true"
+        :filters="[{ text: '中标公告', value: '中标公告' }, { text: '成交公告', value: '成交公告' }]"
+        :filter-method="filterproj"
       ></el-table-column>
       <el-table-column
         prop="province"
@@ -63,7 +70,12 @@
         label="公告时间"
         width="120"
       ></el-table-column>
-      <el-table-column prop="cost" label="预算（万元）" width="120"></el-table-column>
+      <el-table-column
+        prop="cost"
+        label="预算（万元）"
+        width="120"
+        draggable
+      ></el-table-column>
       <el-table-column
         prop="taskid"
         label="任务编号"
@@ -104,6 +116,7 @@ export default {
     return {
       currentPage: 1,
       perpagecount: 15,
+      radio2 :'',
       dat: [],
       loading: false,
       value2: "",
@@ -155,6 +168,9 @@ export default {
         that.dat = resp.data;
       });
     },
+    filterproj(value, row) {
+        return row.type === value;
+      },
     load() {
       var that = this;
       this.loading = true;

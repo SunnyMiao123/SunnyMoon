@@ -26,6 +26,7 @@
       </el-col>
     </el-row>
     <el-table :data.sync="dat" stripe style="width: 100%" height="400px">
+      <el-table-column type="index" index="index+1" label="#"></el-table-column>
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>
       <el-table-column sortable prop="begin_time" label="开始时间" width="140">
@@ -49,24 +50,38 @@
       </el-table-column>
       <el-table-column label="操作" width="270">
         <template slot-scope="scope">
+          <el-tooltip :content="scope.row.state == 'Open' ? '执行' : '查看'" placement="bottom">
+            <el-button
+              size="mini"
+              :type="scope.row.state == 'Open' ? 'primary' : 'info'"
+              @click="onexecute(scope.row)"
+              :loading="scope.row.loading"
+              :icon="
+                scope.row.state == 'Open' ? 'el-icon-s-claim' : 'el-icon-info'
+              "
+              circle=""
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip content="下载文档" placement="bottom">
+            <el-button
+              v-show="scope.row.state == 'Closed'"
+              size="mini"
+              type="success"
+              :loading="scope.row.loadingfile"
+              @click="download(scope.row)"
+              circle
+              icon="el-icon-upload"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip content="删除" placement="bottom">
           <el-button
             size="mini"
-            :type="scope.row.state == 'Open' ? 'primary' : 'success'"
-            @click="onexecute(scope.row)"
-            :loading="scope.row.loading"
-            >{{ scope.row.state == "Open" ? "执行" : "查看" }}</el-button
-          >
-          <el-button
-            v-show="scope.row.state == 'Closed'"
-            size="mini"
-            type="success"
-            :loading="scope.row.loadingfile"
-            @click="download(scope.row)"
-            >下载文件</el-button
-          >
-          <el-button size="mini" type="danger" @click="onDel(scope.row.taskid)"
-            >删除</el-button
-          >
+            type="danger"
+            @click="onDel(scope.row.taskid)"
+            icon="el-icon-delete"
+            circle
+          ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -152,7 +167,7 @@ export default {
       var that = this;
       this.$axios
         .request({
-          url: "http://127.0.0.1:8101/pydata/displayalltasks",
+          url: "/pydata/displayalltasks",
           method: "get",
         })
         .then(function (ret) {
@@ -167,7 +182,7 @@ export default {
       var data = { taskid: taskid };
       this.$axios({
         method: "post",
-        url: "http://127.0.0.1:8101/pydata/deletetask/",
+        url: "/pydata/deletetask/",
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
       }).then(this.initTaskList());
@@ -180,7 +195,7 @@ export default {
           t.loading = true;
           this.$axios({
             method: "post",
-            url: "http://127.0.0.1:8101/pydata/beginPythonData/",
+            url: "/pydata/beginPythonData/",
             data: JSON.stringify({
               begintime: task.begin_time,
               endtime: task.end_time,
@@ -212,10 +227,13 @@ export default {
     savetask() {
       this.$axios({
         method: "post",
-        url: "http://127.0.0.1:8101/pydata/addtask/",
+        url: "/pydata/addtask/",
         data: JSON.stringify(this.formcreate),
         headers: { "Content-Type": "application/json" },
-      }).then(this.initTaskList());
+      }).then((resp) => {
+        console.log(resp);
+        //  this.initTaskList();
+      });
     },
     onSubmit() {
       //console.log(this.$refs['formcreate'])
@@ -223,6 +241,7 @@ export default {
         if (valid) {
           this.savetask();
           this.dialogFormVisible = false;
+          this.initTaskList();
           return true;
         } else {
           console.log(this.formcreate);
@@ -236,7 +255,7 @@ export default {
       task.loadingfile = true;
       this.$axios({
         method: "GET",
-        url: "http://127.0.0.1:8101/pydata/downloadfile/",
+        url: "/pydata/downloadfile/",
         params: { taskid: taskid },
       }).then((response) => {
         task.loadingfile = false;
@@ -246,7 +265,7 @@ export default {
           title: "通知信息",
           message: h("i", { style: "color: teal" }, taskid + " 下载完成！"),
         });
-        this.initTaskList()
+        this.initTaskList();
       });
     },
     begincreatetask() {

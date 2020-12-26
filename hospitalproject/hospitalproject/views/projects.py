@@ -12,7 +12,9 @@ import lxml
 import os
 import urllib.request
 
-
+"""
+获取所有项目数据
+"""
 def getAllProjects(request):
     """
     获取所有项目数据
@@ -30,6 +32,9 @@ def getAllProjects(request):
     fill = json.dumps(lists, default=json_util.default)
     return HttpResponse(fill)
 
+"""
+下载文件
+"""
 def downloadfiles(request):
     """
     下载文件
@@ -66,4 +71,11 @@ def downloadfiles(request):
     tasks = client.get_database('data').get_collection('tasks')
     tasks.update_one({'taskid': taskid}, {
                      '$set': { "state": 'Finish'}})
+    return HttpResponse('Success')
+
+def getProjectsNums(requests):
+    """
+    docstring
+    """
+    
     return HttpResponse('Success')
