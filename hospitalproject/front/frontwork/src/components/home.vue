@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    
     <el-row :gutter="30">
       <el-col :span="8">
         <el-card shadow="hover" class="titleCard">
@@ -9,11 +8,20 @@
             <i class="el-icon-warning-outline" style="float: right"></i>
           </div>
           <span class="bodynum">
-            {{fileTotNum}}
+            {{ fileTotNum }}
           </span>
-          <div class="minChart" ref="docChart">
-            1
-          </div>
+          <a-statistic
+            class="minChart"
+            :value="11"
+            :precision="0"
+            title="本周新增文档数："
+            :value-style="{ color: '#3f8600', 'font-size': '14px' }"
+          >
+            <template #suffix>
+              <a-icon type="caret-up" />
+              <span style="font-size: 11px">9.7%</span>
+            </template>
+          </a-statistic>
         </el-card>
       </el-col>
       <el-col :span="8">
@@ -23,9 +31,8 @@
             <i class="el-icon-warning-outline" style="float: right"></i>
           </div>
           <span class="bodynum">
-            {{tasksTotNum}}
+            {{ tasksTotNum }}
           </span>
-          
         </el-card>
       </el-col>
       <el-col :span="8">
@@ -35,11 +42,31 @@
             <i class="el-icon-warning-outline" style="float: right"></i>
           </div>
           <span class="bodynum">
-            {{hosTotNum}}
+            {{ hosTotNum }}
           </span>
-          
         </el-card>
       </el-col>
+    </el-row>
+    <el-row>
+      <el-card shadow="hover" class="mainpanel">
+        <a-tabs default-active-key="1" @change="callback">
+          <a-tab-pane key="1" tab="区域分布">
+            <ve-map
+              id="mapShow"
+              :data="chartData"
+              :settings="mapsetting"
+              height="500px"
+            ></ve-map>
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="医院等级分布" force-render>
+            <ve-line :data="filedata"></ve-line>
+          </a-tab-pane>
+          <a-tab-pane key="3" tab="文档类型">
+            Content of Tab Pane 3
+          </a-tab-pane>
+          <div slot="tabBarExtraContent">1</div>
+        </a-tabs>
+      </el-card>
     </el-row>
   </div>
 </template>
@@ -48,49 +75,93 @@ export default {
   data() {
     return {
       fileTotNum: "",
-      hosTotNum:"",
-      tasksTotNum :"",
-
+      hosTotNum: "",
+      tasksTotNum: "",
+      filedata: "",
+      chartData:"",
+      chartData2: "",
+      mapsetting: "",
     };
   },
   mounted() {
-    this.getBasedata()
-    this.drawminchart1()
+    this.getBasedata();
+   // this.drawminchart1();
   },
   methods: {
     getBasedata() {
       this.$axios({
-        method:"GET",
-        url:"/pydata/home/getBaseNum",
+        method: "GET",
+        url: "/pydata/home/getBaseNum",
       }).then((resp) => {
-        this.fileTotNum=resp.data.fileTotNum
-        this.hosTotNum = resp.data.hosTotNum
-        this.tasksTotNum = resp.data.tasksTotNum
+        this.fileTotNum = resp.data.fileTotNum;
+        this.hosTotNum = resp.data.hosTotNum;
+        this.tasksTotNum = resp.data.tasksTotNum;
+        this.chartData2=resp.data.fileStatics;
+        console.log(this.chartData2);
+        this.drawminchart1()
       });
     },
-    drawminchart1(){
-      let chart = this.$echarts.init(document.getElementById('docChart'))
-      console.log(chart)
+    drawminchart1() {
+      this.mapsetting = {
+        aspectScale: 0.75,
+        itemStyle: {
+          normal: {
+            label: {
+              show: true,
+              color: "#606266",
+            },
+            borderColor: "#FFFFFF",
+            areaColor: "#EBEEF5",
+            opcity: "0.5",
+          },
+          emphasis: {
+            areaColor: "#409EFF",
+            shadowColor: "rgba(0,0,0,0.5)",
+            shadowOffsetX: 0,
+            shadowOffsetY: 3,
+            shadowBlur: 16, //16
+          },
+        },
 
-     //var chart =  this.$echarts.init(this.$el('docChart'))
-    }
+        zoom: 1.1,
+      };
+     // this.chartData=this.chartData2
+     this.chartData = {
+        columns: ["_id", "数量"],
+        rows: this.chartData2.rows,
+      }; 
+      this.filedata = {
+        columns: ["日期", "访问用户"],
+        rows: [
+          { 日期: "1/1", 访问用户: 1393 },
+          { 日期: "1/2", 访问用户: 3530 },
+          { 日期: "1/3", 访问用户: 2923 },
+          { 日期: "1/4", 访问用户: 1723 },
+          { 日期: "1/5", 访问用户: 3792 },
+          { 日期: "1/6", 访问用户: 4593 },
+        ],
+      };
+      //var chart =  this.$echarts.init(this.$el('docChart'))
+    },
   },
 };
 </script>
 
 <style scoped>
-.minChart{
+.minChart {
   float: right;
+  padding-top: 5px;
   height: 70px;
   width: 120px;
+  font-size: 7px;
 }
 .titleCard {
   min-height: 150px;
   height: 150px;
 }
-.bodynum{
-  padding: 1em;
+.bodynum {
   font-size: 30px;
+  padding-left: 1.5em;
 }
 .title {
   font-size: 17px;
@@ -98,5 +169,9 @@ export default {
 }
 .el-icon-warning-outline {
   color: #909399;
+}
+.mainpanel {
+  height: 600px;
+  margin-top: 30px;
 }
 </style>

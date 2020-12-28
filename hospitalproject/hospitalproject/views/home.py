@@ -10,7 +10,7 @@ client = pymongo.MongoClient(host='127.0.0.1', port=27017)
 list = []
 database = client.get_database('data')
 hoscollections = database.get_collection('hospitals')
-procollections = database.get_collection('projects')
+procollections = database.get_collection('projects_new')
 taskscollection = database.get_collection('tasks')
 source = hoscollections.aggregate([
     {
@@ -30,8 +30,10 @@ vals = [t['value']for t in list]
 def hello(request):
     return render(request, 'index.html', {'data': list, 'cols': cols, 'vals': vals})
 
+
 def datashow(request):
     return render(request, 'datashow.html')
+
 
 def getbasenum(request):
     """
@@ -41,12 +43,42 @@ def getbasenum(request):
 
     hospitalTotNum = hoscollections.count()
     tasksnum = taskscollection.count()
+    prov= procollections.aggregate([
+        {
+            '$group': {
+                '_id': '$province',
+                '数量': {
+                    '$sum': 1
+                }
+            }
+        }
+    ])
     jsonfile = json.dumps({
-        'fileTotNum':fileTotnum,
-        'hosTotNum':hospitalTotNum,
-        'tasksTotNum':taskscollection.count()
+        'fileTotNum': fileTotnum,
+        'hosTotNum': hospitalTotNum,
+        'tasksTotNum': taskscollection.count(),
+        'fileStatics':{
+            'colunms':['_id','数量'],
+            'rows':[i for i in prov]
+        }
     })
     return HttpResponse(jsonfile)
 
+
+def getStaticsNum(request):
+    prov= procollections.aggregate([
+        {
+            '$group': {
+                '_id': '$province',
+                'total': {
+                    '$sum': 1
+                }
+            }
+        }
+    ])
+    for item in prov:
+        print(item)
+
+
 if __name__ == "__main__":
-    getbasenum('')
+    getStaticsNum('')

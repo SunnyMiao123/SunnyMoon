@@ -24,13 +24,14 @@
     "ant-design-vue": "^1.7.2",
     "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
-    "echarts": "^5.0.0",
+    "echarts": "^4.9.0",
     "el-table-infinite-scroll": "^1.0.10",
     "element-ui": "^2.14.1",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
+    "v-charts": "^1.19.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
