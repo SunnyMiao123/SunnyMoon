@@ -51,12 +51,63 @@
       <el-card shadow="hover" class="mainpanel">
         <a-tabs default-active-key="1" @change="callback">
           <a-tab-pane key="1" tab="区域分布">
-            <ve-map
-              id="mapShow"
-              :data="chartData"
-              :settings="mapsetting"
-              height="500px"
-            ></ve-map>
+            <a-row>
+              <a-col :span="18">
+                <ve-map
+                  id="mapShow"
+                  :data="chartData"
+                  :settings="mapsetting"
+                  height="500px"
+                ></ve-map>
+              </a-col>
+              <a-col :span="6">
+                <a-list
+                  size="small"
+                  style="float: right; height: 500px; overflow-y: scroll"
+                  :data-source="chartData.rows"
+                >
+                  <a-list-item slot="renderItem" slot-scope="item, index">
+                    <template>
+                      <a-row style="width: 200px">
+                        <a-col :span="6">
+                          <a-badge
+                            v-if="index == 0"
+                            :count="index + 1"
+                            :number-style="{
+                              backgroundColor: '#F56C6C',
+                              color: '#FFFFFF'
+                            }"
+                          ></a-badge>
+                           <a-badge
+                            v-if="index == 1||index == 2"
+                            :count="index + 1"
+                            :number-style="{
+                              backgroundColor: '#409EFF',
+                              color: '#FFFFFF'
+                            }"
+                          ></a-badge>
+                          <a-badge
+                            v-if="index >= 3"
+                            :count="index + 1"
+                            :number-style="{
+                              backgroundColor: '#fff',
+                              color: '#999',
+                              boxShadow: '0 0 0 1px #d9d9d9 inset',
+                            }"
+                          ></a-badge>
+                        </a-col>
+                        <a-col :span="10">
+                          <span class="listpad">{{ item._id }}</span>
+                        </a-col>
+                        <a-col>
+                          <span class="listpad">{{ item.数量 }}</span>
+                        </a-col>
+                      </a-row>
+                    </template>
+                  </a-list-item>
+                </a-list>
+              </a-col>
+            </a-row>
           </a-tab-pane>
           <a-tab-pane key="2" tab="医院等级分布" force-render>
             <ve-line :data="filedata"></ve-line>
@@ -78,14 +129,14 @@ export default {
       hosTotNum: "",
       tasksTotNum: "",
       filedata: "",
-      chartData:"",
+      chartData: "",
       chartData2: "",
       mapsetting: "",
     };
   },
   mounted() {
     this.getBasedata();
-   // this.drawminchart1();
+    // this.drawminchart1();
   },
   methods: {
     getBasedata() {
@@ -96,9 +147,8 @@ export default {
         this.fileTotNum = resp.data.fileTotNum;
         this.hosTotNum = resp.data.hosTotNum;
         this.tasksTotNum = resp.data.tasksTotNum;
-        this.chartData2=resp.data.fileStatics;
-        console.log(this.chartData2);
-        this.drawminchart1()
+        this.chartData2 = resp.data.fileStatics;
+        this.drawminchart1();
       });
     },
     drawminchart1() {
@@ -125,11 +175,11 @@ export default {
 
         zoom: 1.1,
       };
-     // this.chartData=this.chartData2
-     this.chartData = {
+      // this.chartData=this.chartData2
+      this.chartData = {
         columns: ["_id", "数量"],
         rows: this.chartData2.rows,
-      }; 
+      };
       this.filedata = {
         columns: ["日期", "访问用户"],
         rows: [
@@ -148,6 +198,10 @@ export default {
 </script>
 
 <style scoped>
+.listpad {
+  display: inline;
+  width: 70px;
+}
 .minChart {
   float: right;
   padding-top: 5px;

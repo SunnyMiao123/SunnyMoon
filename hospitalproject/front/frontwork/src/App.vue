@@ -50,7 +50,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main style="max-height: 600px">
+      <el-main>
 
         <router-view />
       </el-main>
@@ -83,6 +83,9 @@ export default {
 <style scoped>
 #nav-header {
   padding: 0px;
+}
+.el-main{
+  height: calc(100vh - 70px);
 }
 
 .el-aside {

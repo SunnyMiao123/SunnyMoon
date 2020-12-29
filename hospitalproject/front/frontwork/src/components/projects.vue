@@ -1,5 +1,5 @@
 <template>
-  <div class="projects" style="max-height: 600">
+  <div class="projects">
     <el-page-header content="查询结果"></el-page-header>
     <el-row
       align="middle"
@@ -26,10 +26,10 @@
     </el-row>
     <el-table
       :data="dat"
-      height="470px"
       id="el-proj-list"
       v-el-table-infinite-scroll="load"
       v-loading="loading"
+      :height="tableheight"
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
     >
@@ -79,7 +79,7 @@
       <el-table-column
         prop="taskid"
         label="任务编号"
-        width="120"
+        width="140"
       ></el-table-column>
       <el-table-column
         prop="depart"
@@ -87,26 +87,7 @@
         width="260"
       ></el-table-column>
     </el-table>
-    <el-backtop
-      target=".page-component__scroll .el-scrollbar__wrap"
-      :bottom="100"
-    >
-      <div
-        style="
-           {
-            height: 100%;
-            width: 100%;
-            background-color: #f2f5f6;
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
-            text-align: center;
-            line-height: 40px;
-            color: #1989fa;
-          }
-        "
-      >
-        UP
-      </div>
-    </el-backtop>
+    
   </div>
 </template>
 
@@ -120,6 +101,7 @@ export default {
       dat: [],
       loading: false,
       value2: "",
+      tableheight:"",
       pickerOptions: {
         shortcuts: [
           {
@@ -155,10 +137,17 @@ export default {
   },
   mounted: function () {
     this.displayprojects();
+    this.getcliHeight();
   },
   methods: {
+    getcliHeight(){
+      var that = this;
+      that.tableheight=document.getElementById('el-proj-list').clientHeight;
+    },
+
     displayprojects() {
       var that = this;
+      console.log(document.getElementById('el-proj-list').clientHeight)
       this.$axios({
         method: "get",
         url: "http://127.0.0.1:8101/pydata/projects/getall/",
@@ -194,5 +183,8 @@ export default {
 <style scoped>
 .panel {
   height: 70px;
+}
+#el-proj-list{
+  height: calc(100vh - 200px);
 }
 </style>

@@ -25,7 +25,7 @@
         </el-button-group>
       </el-col>
     </el-row>
-    <el-table :data.sync="dat" stripe style="width: 100%" height="400px">
+    <el-table :data.sync="dat" stripe style="width: 100%">
       <el-table-column type="index" index="index+1" label="#"></el-table-column>
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>

@@ -44,15 +44,19 @@ def getbasenum(request):
     hospitalTotNum = hoscollections.count()
     tasksnum = taskscollection.count()
     prov= procollections.aggregate([
-        {
-            '$group': {
-                '_id': '$province',
-                '数量': {
-                    '$sum': 1
-                }
+    {
+        '$group': {
+            '_id': '$province', 
+            '数量': {
+                '$sum': 1
             }
         }
-    ])
+    }, {
+        '$sort': {
+            '数量': -1
+        }
+    }
+])
     jsonfile = json.dumps({
         'fileTotNum': fileTotnum,
         'hosTotNum': hospitalTotNum,
