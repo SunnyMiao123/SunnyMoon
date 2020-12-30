@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import hospitalproject.views.home as view
-import hospitalproject.views.tasks as tasks
-import hospitalproject.views.projects as projects
+import backend.views.home as view
+import backend.views.tasks as tasks
+import backend.views.projects as projects
 
 urlpatterns = [
     path('admin/', admin.site.urls),

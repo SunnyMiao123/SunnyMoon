@@ -14,7 +14,7 @@ import json
 import sys
 from bson import json_util
 sys.path.append(
-    '/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/hospitalproject/adapter/')
+    '/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/backend/adapter/')
 import projectsnew as project
 
 
