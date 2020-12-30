@@ -1,7 +1,7 @@
 import decimal
 import re
 import requests
-import dbmanager as manager
+
 import csv
 import os
 from bs4 import BeautifulSoup
@@ -11,10 +11,8 @@ import sys
 import uuid
 import math
 import bson.decimal128 as decimal128
-sys.path.append('..')
 import datetime
 import time
-
 
 class projectsdata:
 

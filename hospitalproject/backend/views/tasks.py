@@ -1,22 +1,24 @@
-from django.views.decorators.csrf import csrf_exempt
-
-import os
-from django.http import HttpResponse
-from django.shortcuts import render, render_to_response
-import pymongo
 import datetime
-from django import forms
-from django.core.exceptions import ValidationError
-from django.shortcuts import redirect
-import threading
-from django.core import serializers
 import json
+import os
 import sys
+import threading
+
+import pymongo
 from bson import json_util
+from django import forms
+from django.core import serializers
+from django.core.exceptions import ValidationError
+from django.http import HttpResponse
+from django.shortcuts import redirect, render, render_to_response
+from django.views.decorators.csrf import csrf_exempt
 sys.path.append(
     '/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/backend/adapter/')
+
 import projectsnew as project
 
+if __name__ == "__main__":
+    print(sys.path)
 
 class input_form(forms.Form):
     begintime = forms.CharField(
