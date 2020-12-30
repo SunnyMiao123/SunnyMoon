@@ -198,6 +198,10 @@ export default {
 </script>
 
 <style scoped>
+.home{
+  height: 100%;
+  overflow-y: auto;
+}
 .listpad {
   display: inline;
   width: 70px;

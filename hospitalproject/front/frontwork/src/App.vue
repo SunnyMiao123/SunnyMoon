@@ -1,100 +1,85 @@
 <template>
-  <el-container class="maincontainer">
-    <el-header id="nav-header">
-      <el-menu
-        :default-active="activeIndex"
-        class="el-menu-demo"
-        mode="horizontal"
-        @select="handleSelect"
-        background-color="#001f3f"
-        text-color="#fff"
-        active-text-color="#ffffff"
+  <a-layout id="components-layout-demo-custom-trigger">
+    <a-layout-sider width="230" v-model="collapsed" :trigger="null" collapsible>
+      <div class="logo">
+        <img src="./assets/数据库_配图.png" style="height: 30px" />
+        <span class="title2" v-show="!collapsed">政府采购网专题爬取</span>
+      </div>
+      <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+        <a-menu-item key="1">
+          <router-link to="/">
+            <a-icon type="user" />
+            <span>首页</span>
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="2">
+          <router-link to="/task">
+            <a-icon type="video-camera" />
+            <span>爬取任务列表</span>
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="3">
+          <router-link to="/projects">
+            <a-icon type="upload" />
+            <span>项目文档列表</span>
+          </router-link>
+        </a-menu-item>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout>
+      <a-layout-header style="background: #fff; padding: 0">
+        <a-icon
+          class="trigger"
+          :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+          @click="() => (collapsed = !collapsed)"
+        />
+      </a-layout-header>
+      <a-layout-content
+        :style="{
+          margin: '24px 16px',
+          padding: '24px',
+          background: '#fff',
+          minHeight: '280px',
+        }"
       >
-        <el-menu-item index="1">
-          <img style="height: 30px" src="./assets/数据库_配图.png" />
-          <span style="padding-left: 20px; font-size: 18px"
-            >政府采购-医疗信息化专题爬取</span
-          >
-        </el-menu-item>
-      </el-menu>
-    </el-header>
-    <el-container>
-      <el-aside style="width: 200px">
-        <el-menu
-        router
-          default-active="/"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-          @mouseenter.native="moenter"
-          @mouseleave.native="moleave"
-          :collapse="false"
-          :collapse-transition="true"
-          :unique-opened="true"
-        >
-          <el-menu-item index="/" class="el-menu-item">
-            <i class="el-icon-s-home"></i>
-            <span slot="title">主页</span>
-          </el-menu-item>
-          <el-menu-item index="/task">
-            <i class="el-icon-menu"></i>
-            <span slot="title">任务列表</span>
-          </el-menu-item>
-          <el-menu-item index="/projects">
-            <i class="el-icon-document"></i>
-            <span slot="title">数据展示</span>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span slot="title">统计分析</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-main>
-
         <router-view />
-      </el-main>
-    </el-container>
-  </el-container>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 <script>
 export default {
   data() {
     return {
-      isCollapse: true,
+      collapsed: false,
     };
-  },
-  methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    moenter() {
-      this.isCollapse = false;
-    },
-    moleave() {
-      this.isCollapse = true;
-    },
   },
 };
 </script>
-<style scoped>
-#nav-header {
-  padding: 0px;
+<style>
+#components-layout-demo-custom-trigger {
+  height: calc(100vh);
 }
-.el-main{
-  height: calc(100vh - 70px);
+#components-layout-demo-custom-trigger .title2 {
+  color: white;
+  padding-left: 1em;
+  font-size: 15px;
+}
+#components-layout-demo-custom-trigger .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-.el-aside {
-  border-right: 1px;
-  border-right-color: gainsboro;
-  border-right-style: solid;
-  width: 200px;
+#components-layout-demo-custom-trigger .trigger:hover {
+  color: #1890ff;
 }
-.el-menu {
-  border-right: 0ch;
+
+#components-layout-demo-custom-trigger .logo {
+  height: 32px;
+  background: transparent;
+  margin: 16px;
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div class="task">
-    <el-page-header content="爬取任务列表"> </el-page-header>
-    <el-divider></el-divider>
+    <a-page-header></a-page-header>
     <el-row type="flex" justify="end">
       <el-col>
         <el-button-group style="float: right">
@@ -25,7 +24,7 @@
         </el-button-group>
       </el-col>
     </el-row>
-    <el-table :data.sync="dat" stripe style="width: 100%">
+    <el-table :data.sync="dat" stripe style="width: 100%" id="tasktable" :height="tableheight">
       <el-table-column type="index" index="index+1" label="#"></el-table-column>
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>
@@ -156,13 +155,22 @@ export default {
         keyword: { required: true, message: "请输入关键词", trigger: "blur" },
       },
       dialogFormVisible: false,
+      tableheight:"",
     };
   },
   mounted: function () {
     this.initTaskList();
+    this.inittableheight();
   },
 
   methods: {
+    inittableheight(){
+      var that = this;
+      that.tableheight = document.getElementById('tasktable').clientHeight;
+      window.onresize=()=>{
+        document.getElementById('tasktable').style.height = "calc(100vh - 240px)";
+        }
+    },
     initTaskList() {
       var that = this;
       this.$axios
@@ -279,3 +287,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+#tasktable{
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+</style>

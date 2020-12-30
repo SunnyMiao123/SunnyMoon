@@ -1,6 +1,5 @@
 <template>
   <div class="projects">
-    <el-page-header content="查询结果"></el-page-header>
     <el-row
       align="middle"
       class="panel"
@@ -25,7 +24,7 @@
       </el-col>
     </el-row>
     <el-table
-      :data="dat"
+      :data.sync="dat"
       id="el-proj-list"
       v-el-table-infinite-scroll="load"
       v-loading="loading"
@@ -150,7 +149,7 @@ export default {
       console.log(document.getElementById('el-proj-list').clientHeight)
       this.$axios({
         method: "get",
-        url: "http://127.0.0.1:8101/pydata/projects/getall/",
+        url: "/pydata/projects/getall/",
         params: { page: 1, percount: 15 },
       }).then((resp) => {
         that.currentPage = that.currentPage + 1;
@@ -185,6 +184,6 @@ export default {
   height: 70px;
 }
 #el-proj-list{
-  height: calc(100vh - 200px);
+  height: calc(100vh - 220px);
 }
 </style>
