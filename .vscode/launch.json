@@ -8,7 +8,7 @@
             "name": "Python: 当前文件",
             "type": "python",
             "request": "launch",
-            "program": "/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/hospitalproject/adapter/projectsnew.py",
+            "program": "/Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/backend/adapter/projectsnew.py",
             "console": "integratedTerminal"
         }
     ]

@@ -157,7 +157,7 @@ export default {
       this.loading = true;
       this.$axios({
         method: "get",
-        url: "http://127.0.0.1:8101/pydata/projects/getall/",
+        url: "/pydata/projects/getall/",
         params: { page: this.currentPage, percount: 15 },
       }).then((resp) => {
         setTimeout(() => {

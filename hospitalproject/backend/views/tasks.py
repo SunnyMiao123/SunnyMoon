@@ -72,7 +72,7 @@ def showalltasks(request):
     """
     return render(request, 'task-display.html', {'tasksdata': gettasksdata()})
 
-
+ 
 def gettodayMaxsort(collection):
     """
     获取当日最大流水号

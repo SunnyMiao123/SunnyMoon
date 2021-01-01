@@ -76,7 +76,7 @@ class projectsdata:
             'start_time': begintime,
             'end_time': endtime,
             'timeType': '6'}
-
+        
         response = requests.get(
             url=self.baseURL, headers=self.headers, params=params)
         if response.status_code == 200:
@@ -111,7 +111,7 @@ class projectsdata:
             li = temp.find('ul', attrs={'class': 'vT-srch-result-list-bid'})
             if li != None:
                 for child in li.find_all('li'):
-                    begintime = datetime.datetime.now()
+                    time1 = datetime.datetime.now()
                     tid = uuid.uuid1()
                     name = child.find('a').get_text().strip()
                     url = child.find('a')['href']
@@ -144,8 +144,8 @@ class projectsdata:
                                 'date': date, 'depart': depart, 'agent':agent,
                                 'type': typ, 'province': province,'taskid':taskid,'html':html}
                     retlist.append(instance)
-                    endtime = datetime.datetime.now()
-                    print(name,'耗时：',str(endtime - begintime))
+                    time2 = datetime.datetime.now()
+                    print(name,'耗时：',str(time2 - time1))
             else:
                 return None
         return retlist,docnum
@@ -160,6 +160,10 @@ class projectsdata:
 
 
 if __name__ == "__main__":
+    """
+    data=projectsdata()
+    lis = data.CatchAll('2020:12:24','2020:12:31','医院信息','2')
+    """
     """
     str = '￥80.400000 万元（人民币）'
     print(decimal.Decimal(re.findall(r"\d*[.]\d*", str)[0]))
@@ -182,4 +186,4 @@ if __name__ == "__main__":
     data = {'date':datetime.datetime.strptime(data,'%Y.%m.%d %H:%M:%S')}
     c.insert(data)
     """
-print(datetime.datetime.now())
+#print(datetime.datetime.now())
