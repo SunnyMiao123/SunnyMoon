@@ -1,30 +1,29 @@
 <template>
   <div class="task">
-    <a-page-header></a-page-header>
-    <el-row type="flex" justify="end">
-      <el-col>
-        <el-button-group style="float: right">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            plain
-            @click="begincreatetask"
-            >新建</el-button
+    <a-page-header
+      @back="$router.go(-1)"
+      title="爬取任务列表"
+      sub-title="任务列表的集成展示，可以通过此功能建立爬取任务并设置自动执行等功能"
+      style="padding: 0px"
+    >
+      <template slot="extra">
+        <a-button-group>
+          <a-button @click="begincreatetask" type="primary" icon="form"
+            >新建</a-button
           >
-          <el-button type="primary" icon="el-icon-odometer" plain
-            >自动执行</el-button
-          >
-          <el-button
-            type="primary"
-            icon="el-icon-refresh"
-            plain
-            @click="initTaskList"
-            >刷新</el-button
-          >
-        </el-button-group>
-      </el-col>
-    </el-row>
-    <el-table :data.sync="dat" stripe style="width: 100%" id="tasktable" :height="tableheight">
+          <a-button icon="dashboard">自动执行</a-button>
+          <a-button @click="initTaskList" icon="reload">刷新</a-button>
+        </a-button-group>
+      </template>
+      <a-divider />
+    </a-page-header>
+    <el-table
+      :data.sync="dat"
+      stripe
+      style="width: 100%"
+      id="tasktable"
+      :height="tableheight"
+    >
       <el-table-column type="index" index="index+1" label="#"></el-table-column>
       <el-table-column prop="taskid" label="ID" width="140"> </el-table-column>
       <el-table-column prop="date" label="日期" width="140"> </el-table-column>
@@ -49,7 +48,10 @@
       </el-table-column>
       <el-table-column label="操作" width="270">
         <template slot-scope="scope">
-          <el-tooltip :content="scope.row.state == 'Open' ? '执行' : '查看'" placement="bottom">
+          <el-tooltip
+            :content="scope.row.state == 'Open' ? '执行' : '查看'"
+            placement="bottom"
+          >
             <el-button
               size="mini"
               :type="scope.row.state == 'Open' ? 'primary' : 'info'"
@@ -73,13 +75,13 @@
             ></el-button>
           </el-tooltip>
           <el-tooltip content="删除" placement="bottom">
-          <el-button
-            size="mini"
-            type="danger"
-            @click="onDel(scope.row.taskid)"
-            icon="el-icon-delete"
-            circle
-          ></el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="onDel(scope.row.taskid)"
+              icon="el-icon-delete"
+              circle
+            ></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -155,7 +157,7 @@ export default {
         keyword: { required: true, message: "请输入关键词", trigger: "blur" },
       },
       dialogFormVisible: false,
-      tableheight:"",
+      tableheight: "",
     };
   },
   mounted: function () {
@@ -164,12 +166,13 @@ export default {
   },
 
   methods: {
-    inittableheight(){
+    inittableheight() {
       var that = this;
-      that.tableheight = document.getElementById('tasktable').clientHeight;
-      window.onresize=()=>{
-        document.getElementById('tasktable').style.height = "calc(100vh - 240px)";
-        }
+      that.tableheight = document.getElementById("tasktable").clientHeight;
+      window.onresize = () => {
+        document.getElementById("tasktable").style.height =
+          "calc(100vh - 240px)";
+      };
     },
     initTaskList() {
       var that = this;
@@ -193,7 +196,10 @@ export default {
         url: "/pydata/deletetask/",
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
-      }).then(this.initTaskList());
+      }).then((t) => {
+        console.log(t);
+        this.initTaskList();
+      });
     },
     onexecute(task) {
       var taskid = task.taskid;
@@ -240,16 +246,14 @@ export default {
         headers: { "Content-Type": "application/json" },
       }).then((resp) => {
         console.log(resp);
-        //  this.initTaskList();
+        this.initTaskList();
       });
     },
     onSubmit() {
-      //console.log(this.$refs['formcreate'])
       this.$refs["formcreate"].validate((valid) => {
         if (valid) {
           this.savetask();
           this.dialogFormVisible = false;
-          this.initTaskList();
           return true;
         } else {
           console.log(this.formcreate);
@@ -288,7 +292,7 @@ export default {
 };
 </script>
 <style scoped>
-#tasktable{
+#tasktable {
   height: calc(100vh - 240px);
   overflow-y: auto;
 }

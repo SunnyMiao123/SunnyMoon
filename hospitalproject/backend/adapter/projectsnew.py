@@ -13,6 +13,8 @@ import math
 import bson.decimal128 as decimal128
 import datetime
 import time
+sys.path.append('..')
+import dbmanager as manager
 
 class projectsdata:
 

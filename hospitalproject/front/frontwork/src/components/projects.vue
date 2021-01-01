@@ -1,28 +1,21 @@
 <template>
   <div class="projects">
-    <el-row
-      align="middle"
-      class="panel"
-      type="flex"
-    >
-      <el-col span="2">
-        <p>时间范围：</p>
-      </el-col>
-      <el-col span="8">
-        <el-date-picker
-        size="medium"
-          v-model="value2"
-          type="daterange"
-          align="right"
-          unlink-panels
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :picker-options="pickerOptions"
-        >
-        </el-date-picker>
-      </el-col>
-    </el-row>
+     <a-page-header
+     title="文档列表"
+     sub-title="展示时间内文档内容"
+     @back="() => $router.go(-1)"
+     style="padding-top:0px;padding-left:0px"
+     >
+       <template slot="extra">
+        <a-button key="3">
+          清空
+        </a-button>
+        <a-button key="1" type="primary">
+          查询
+        </a-button>
+      </template>
+      <a-row></a-row>
+     </a-page-header>
     <el-table
       :data.sync="dat"
       id="el-proj-list"

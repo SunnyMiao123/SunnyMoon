@@ -53,6 +53,9 @@ export default {
     return {
       collapsed: false,
     };
+  },  
+  created() {
+    document.title="医疗信息化专题数据展示"
   },
 };
 </script>

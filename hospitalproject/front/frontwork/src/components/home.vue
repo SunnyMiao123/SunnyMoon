@@ -49,7 +49,7 @@
     </el-row>
     <el-row>
       <el-card shadow="hover" class="mainpanel">
-        <a-tabs default-active-key="1" @change="callback">
+        <a-tabs default-active-key="1" @change="callback" style="margin:20px">
           <a-tab-pane key="1" tab="区域分布">
             <a-row>
               <a-col :span="18">
@@ -191,7 +191,6 @@ export default {
           { 日期: "1/6", 访问用户: 4593 },
         ],
       };
-      //var chart =  this.$echarts.init(this.$el('docChart'))
     },
   },
 };
