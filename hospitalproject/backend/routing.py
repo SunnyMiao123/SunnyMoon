@@ -3,6 +3,6 @@ from django.conf.urls import url
 
 application = ProtocolTypeRouter({
     "websocket":URLRouter([
-
+        
     ])
 })

@@ -16,9 +16,6 @@ import urllib.request
 获取所有项目数据
 """
 def getAllProjects(request):
-    """
-    获取所有项目数据
-    """
     client = pymongo.MongoClient('127.0.0.1', 27017)
     projects = client.get_database('data').get_collection('projects_new')
     page = int(request.GET['page'])-1
