@@ -10,3 +10,4 @@ hospitalproject/backend/__pycache__/settings.cpython-37.pyc
 hospitalproject/backend/views/__pycache__/__init__.cpython-37.pyc
 hospitalproject/backend/views/__pycache__/tasks.cpython-37.pyc
 hospitalproject/backend/adapter/__pycache__/__init__.cpython-37.pyc
+hospitalproject/front/.DS_Store
