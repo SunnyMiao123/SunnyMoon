@@ -49,7 +49,7 @@
     </el-row>
     <el-row>
       <el-card shadow="hover" class="mainpanel">
-        <a-tabs default-active-key="1" @change="callback" style="margin:20px">
+        <a-tabs default-active-key="1" @change="callback" style="margin: 20px">
           <a-tab-pane key="1" tab="区域分布">
             <a-row>
               <a-col :span="18">
@@ -57,6 +57,7 @@
                   id="mapShow"
                   :data="chartData"
                   :settings="mapsetting"
+                  :events="chartevent"
                   height="500px"
                 ></ve-map>
               </a-col>
@@ -75,15 +76,15 @@
                             :count="index + 1"
                             :number-style="{
                               backgroundColor: '#F56C6C',
-                              color: '#FFFFFF'
+                              color: '#FFFFFF',
                             }"
                           ></a-badge>
-                           <a-badge
-                            v-if="index == 1||index == 2"
+                          <a-badge
+                            v-if="index == 1 || index == 2"
                             :count="index + 1"
                             :number-style="{
                               backgroundColor: '#409EFF',
-                              color: '#FFFFFF'
+                              color: '#FFFFFF',
                             }"
                           ></a-badge>
                           <a-badge
@@ -124,6 +125,11 @@
 <script>
 export default {
   data() {
+    this.chartevent = {
+      click: (t) => {
+        alert(t.name)
+      },
+    };
     return {
       fileTotNum: "",
       hosTotNum: "",
@@ -197,7 +203,7 @@ export default {
 </script>
 
 <style scoped>
-.home{
+.home {
   height: 100%;
   overflow-y: auto;
 }

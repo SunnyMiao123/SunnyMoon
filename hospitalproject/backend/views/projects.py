@@ -29,6 +29,25 @@ def getAllProjects(request):
     fill = json.dumps(lists, default=json_util.default)
     return HttpResponse(fill)
 
+def getListByCondition(request):
+    """
+    docstring
+    """
+    client = pymongo.MongoClient('127.0.0.1', 27017)
+    projects = client.get_database('data').get_collection('projects_new')
+    condition = request.GET['taskid']
+    print(condition)
+    retList= []
+
+    for t in projects.find({"$or":[{"taskid":condition},{"html":{'$regex':condition}}]}):
+        retList.append({'taskid': t['taskid'], 'date': datetime.datetime.strftime(t['date'], '%Y-%m-%d'), 'province': t['province'],
+                      'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))), 
+                      'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
+    jsonStr= json.dumps(retList,default=json_util.default)
+
+    return HttpResponse(jsonStr)
+
+
 """
 下载文件
 """

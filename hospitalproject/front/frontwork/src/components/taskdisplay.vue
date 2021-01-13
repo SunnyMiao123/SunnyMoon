@@ -74,18 +74,77 @@
               icon="el-icon-upload"
             ></el-button>
           </el-tooltip>
-          <el-tooltip content="删除" placement="bottom">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="onDel(scope.row.taskid)"
-              icon="el-icon-delete"
-              circle
-            ></el-button>
-          </el-tooltip>
+          <a-popconfirm @confirm="onDel(scope.row.taskid)">
+            <template slot="title">
+              <p>是否删除？{{ scope.row.taskid }}</p>
+            </template>
+            <el-tooltip content="删除" placement="bottom">
+              <el-button
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                circle
+              ></el-button>
+            </el-tooltip>
+          </a-popconfirm>
         </template>
       </el-table-column>
     </el-table>
+    <a-drawer
+      width="500px"
+      placement="right"
+      :visible="drawerVisible"
+      :closeable="false"
+      @close="handleClose"
+      title="任务详情"
+    >
+      <a-page-header
+        :title="selectedTag.taskid"
+        sub-title="详细信息"
+        style="padding: 0px"
+      >
+      <template slot="extra">
+         <a-button key="1" type="primary">
+          导出
+        </a-button>
+      </template>
+        <template slot="tags">
+          <a-tag v-if="selectedTag.state == 'Open'" color="blue"
+            >{{ selectedTag.state }}
+          </a-tag>
+          <a-tag v-if="selectedTag.state == 'Closed'" color="red"
+            >{{ selectedTag.state }}
+          </a-tag>
+          <a-tag v-if="selectedTag.state == 'Finish'" color="yellow"
+            >{{ selectedTag.state }}
+          </a-tag>
+        </template>
+        <a-descriptions size="small" :column="2" bordered>
+          <a-descriptions-item label="日期" :span="2">
+            {{ selectedTag.date }}
+          </a-descriptions-item>
+          <a-descriptions-item label="爬取范围" :span="2">
+            {{ selectedTag.begin_time }} 至 {{selectedTag.end_time}}
+          </a-descriptions-item>
+          <a-descriptions-item label="关键字">
+            {{ selectedTag.keyword }} 
+          </a-descriptions-item>
+          <a-descriptions-item label="爬取数量">
+            {{ selectedTag.file_num }} 
+          </a-descriptions-item>
+        </a-descriptions>
+      </a-page-header>
+      <a-table :data-source="tplist" bordered style="padding-top:10px" size="small">
+        <a-table-column>
+          <template slot-scope="scope">
+            <a-badge v-if="scope.type=='中标公告'||scope.type=='成交公告'" status="success" />
+          </template>
+        </a-table-column>
+        <a-table-column key="name" title="项目名称" data-index="name" :width="220" ellipsis="true"/>
+        <a-table-column key="province" title="省份" data-index="province" :width="70" />
+        <a-table-column key="date" title="日期" data-index="date" :width="120" />
+      </a-table>
+    </a-drawer>
     <el-dialog
       title="新建执行任务"
       :visible.sync="dialogFormVisible"
@@ -141,6 +200,7 @@
 export default {
   data() {
     return {
+      drawerVisible: false,
       dat: [],
       formcreate: {
         begintime: "",
@@ -158,6 +218,8 @@ export default {
       },
       dialogFormVisible: false,
       tableheight: "",
+      selectedTag: "",
+      tplist:[],
     };
   },
   mounted: function () {
@@ -166,6 +228,16 @@ export default {
   },
 
   methods: {
+    getTaskData(id){
+      this.$axios({
+        method:"get",
+        url:"pydata/projects/getlistbycondition/",
+        params:{'taskid':id}
+      }).then(response=>{
+        this.tplist=response.data;
+      })
+    },
+
     inittableheight() {
       var that = this;
       that.tableheight = document.getElementById("tasktable").clientHeight;
@@ -235,6 +307,10 @@ export default {
             .catch((ren) => {
               console.log(ren);
             });
+        } else if (t.taskid == taskid && t.state != "Open") {
+          this.drawerVisible = true;
+          this.selectedTag = t;
+          this.getTaskData(t.taskid);
         }
       });
     },
@@ -279,6 +355,9 @@ export default {
         });
         this.initTaskList();
       });
+    },
+    handleClose() {
+      this.drawerVisible = false;
     },
     begincreatetask() {
       this.dialogFormVisible = true;

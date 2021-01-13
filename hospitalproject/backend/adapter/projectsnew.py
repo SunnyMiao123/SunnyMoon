@@ -116,6 +116,7 @@ class projectsdata:
                     name = child.find('a').get_text().strip()
                     url = child.find('a')['href']
                     cost = decimal128.Decimal128('0')
+                    
                     region = ''
                     ys = ''
                     sp = BeautifulSoup(requests.get(url).content, 'lxml')

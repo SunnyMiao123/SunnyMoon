@@ -1,21 +1,23 @@
 <template>
   <div class="projects">
-     <a-page-header
-     title="文档列表"
-     sub-title="展示时间内文档内容"
-     @back="() => $router.go(-1)"
-     style="padding-top:0px;padding-left:0px"
-     >
-       <template slot="extra">
-        <a-button key="3">
-          清空
-        </a-button>
-        <a-button key="1" type="primary">
-          查询
-        </a-button>
+    <a-page-header
+      title="文档列表"
+      sub-title="展示时间内文档内容"
+      @back="() => $router.go(-1)"
+      style="padding-top: 0px; padding-left: 0px"
+    >
+      <template slot="extra">
+        <el-input
+          v-model="input"
+          placeholder="请输入关键字"
+          style="width: 270px"
+          autosize
+        ></el-input>
+        <a-button key="3"> 清空 </a-button>
+        <a-button key="1" type="primary" @click="query"> 查询 </a-button>
       </template>
       <a-row></a-row>
-     </a-page-header>
+    </a-page-header>
     <el-table
       :data.sync="dat"
       id="el-proj-list"
@@ -43,7 +45,10 @@
         label="类别"
         width="120"
         show-overflow-tooltip="true"
-        :filters="[{ text: '中标公告', value: '中标公告' }, { text: '成交公告', value: '成交公告' }]"
+        :filters="[
+          { text: '中标公告', value: '中标公告' },
+          { text: '成交公告', value: '成交公告' },
+        ]"
         :filter-method="filterproj"
       ></el-table-column>
       <el-table-column
@@ -72,6 +77,8 @@
         prop="taskid"
         label="任务编号"
         width="140"
+        :filters="[{ text: '20210107-001', value: '20210107-001' }]"
+        :filter-method="filterstaskid"
       ></el-table-column>
       <el-table-column
         prop="depart"
@@ -79,7 +86,6 @@
         width="260"
       ></el-table-column>
     </el-table>
-    
   </div>
 </template>
 
@@ -89,11 +95,12 @@ export default {
     return {
       currentPage: 1,
       perpagecount: 15,
-      radio2 :'',
+      input: "",
+      radio2: "",
       dat: [],
       loading: false,
       value2: "",
-      tableheight:"",
+      tableheight: "",
       pickerOptions: {
         shortcuts: [
           {
@@ -132,14 +139,14 @@ export default {
     this.getcliHeight();
   },
   methods: {
-    getcliHeight(){
+    getcliHeight() {
       var that = this;
-      that.tableheight=document.getElementById('el-proj-list').clientHeight;
+      that.tableheight = document.getElementById("el-proj-list").clientHeight;
     },
 
     displayprojects() {
       var that = this;
-      console.log(document.getElementById('el-proj-list').clientHeight)
+      console.log(document.getElementById("el-proj-list").clientHeight);
       this.$axios({
         method: "get",
         url: "/pydata/projects/getall/",
@@ -150,8 +157,26 @@ export default {
       });
     },
     filterproj(value, row) {
-        return row.type === value;
-      },
+      return row.type === value;
+    },
+    filterstaskid(value, row) {
+      return row.taskid === value;
+    },
+    query() {
+      this.loading = true;
+      var that = this;
+      this.$axios({
+        method: "get",
+        url: "/pydata/projects/getlistbycondition/",
+        params: { taskid: this.input },
+      }).then((resp) => {
+        that.dat = []
+        resp.data.forEach((t) => {
+          that.dat.push(t);
+        });
+        this.loading = false;
+      });
+    },
     load() {
       var that = this;
       this.loading = true;
@@ -176,7 +201,7 @@ export default {
 .panel {
   height: 70px;
 }
-#el-proj-list{
+#el-proj-list {
   height: calc(100vh - 220px);
 }
 </style>
