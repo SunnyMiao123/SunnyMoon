@@ -43,46 +43,78 @@ def getbasenum(request):
 
     hospitalTotNum = hoscollections.count()
     tasksnum = taskscollection.count()
-    prov= procollections.aggregate([
-    {
-        '$group': {
-            '_id': '$province', 
-            '数量': {
-                '$sum': 1
+    prov = procollections.aggregate([
+        {
+            '$group': {
+                '_id': '$province',
+                '数量': {
+                    '$sum': 1
+                }
+            }
+        }, {
+            '$sort': {
+                '数量': -1
             }
         }
-    }, {
-        '$sort': {
-            '数量': -1
-        }
-    }
-])
+    ])
     jsonfile = json.dumps({
         'fileTotNum': fileTotnum,
         'hosTotNum': hospitalTotNum,
         'tasksTotNum': taskscollection.count(),
-        'fileStatics':{
-            'colunms':['_id','数量'],
-            'rows':[i for i in prov]
+        'fileStatics': {
+            'colunms': ['_id', '数量'],
+            'rows': [i for i in prov]
         }
     })
     return HttpResponse(jsonfile)
 
-
 def getStaticsNum(request):
-    prov= procollections.aggregate([
+    nowdate = datetime.datetime.now()
+    params = request.GET['params']
+   # params = 'b'
+    time1 = ''
+    time2 = ''
+    if params == 'a':
+        time1 = datetime.datetime(nowdate.year, 1, 1, 0, 0, 0)
+        time2 = datetime.datetime(nowdate.year, 12, 31, 0, 0, 0)
+    elif params == 'b':
+        distin = int(nowdate.month/3)
+        time1 = datetime.datetime(nowdate.year, (distin)*3+1, 1, 0, 0, 0)
+        time2 = datetime.datetime(
+            nowdate.year, (distin+1)*3+1, 1, 0, 0, 0)-datetime.timedelta(days=1)
+    elif params == 'c':
+        time1 = datetime.datetime(nowdate.year, nowdate.month, 1, 0, 0, 0)
+        time2 = datetime.datetime(
+            nowdate.year, nowdate.month+1, 1, 0, 0, 0)-datetime.timedelta(days=1)
+    else :
+        time1=datetime.datetime.strptime(request.GET['time1'],'%Y-%m-%d')
+        time2=datetime.datetime.strptime(request.GET['time2'],'%Y-%m-%d')
+        print(time1,time2)
+
+    prov = procollections.aggregate([
         {
+            '$match': {
+                'date': {
+                    '$gte': time1,
+                    '$lte': time2
+                }
+            }
+        }, {
             '$group': {
                 '_id': '$province',
-                'total': {
+                '数量': {
                     '$sum': 1
                 }
             }
-        }
+        }, {'$sort': {'数量': -1}}
     ])
-    for item in prov:
-        print(item)
-
+    jsonfile = json.dumps({
+        'fileStatics': {
+            'colunms': ['_id', '数量'],
+            'rows': [i for i in prov]
+        }
+    })
+    return HttpResponse(jsonfile)
 
 if __name__ == "__main__":
     getStaticsNum('')

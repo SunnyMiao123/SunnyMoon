@@ -116,10 +116,36 @@
           <a-tab-pane key="3" tab="文档类型">
             Content of Tab Pane 3
           </a-tab-pane>
-          <div slot="tabBarExtraContent">1</div>
+          <div slot="tabBarExtraContent">
+            <a-radio-group
+              default-value="a"
+              button-style="solid"
+              @change="selChange"
+            >
+              <a-radio-button value="a"> 全年 </a-radio-button>
+              <a-radio-button value="b"> 当季度 </a-radio-button>
+              <a-radio-button value="c"> 当月 </a-radio-button>
+              <a-radio-button value="d"> 指定时间 </a-radio-button>
+            </a-radio-group>
+            <el-date-picker
+              v-model="daterange"
+              size="small"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="margin: 10px"
+              value-format="yyyy-MM-dd"
+              @change="changedate"
+            >
+            </el-date-picker>
+          </div>
         </a-tabs>
       </el-card>
     </el-row>
+    <a-drawer width="500px" :visible="drawervisible" :closeable="false" @close="()=>this.drawervisible=false">
+      
+    </a-drawer>
   </div>
 </template>
 <script>
@@ -127,10 +153,11 @@ export default {
   data() {
     this.chartevent = {
       click: (t) => {
-        alert(t.name)
+        this.drawervisible = true;
       },
     };
     return {
+      drawervisible: false,
       fileTotNum: "",
       hosTotNum: "",
       tasksTotNum: "",
@@ -138,6 +165,7 @@ export default {
       chartData: "",
       chartData2: "",
       mapsetting: "",
+      daterange: "",
     };
   },
   mounted() {
@@ -145,6 +173,36 @@ export default {
     // this.drawminchart1();
   },
   methods: {
+    changedate(t) {
+      this.$axios({
+        method: "get",
+        url: "/pydata/home/getstatics/",
+        params: {
+          params: "d",
+          time1: this.daterange[0],
+          time2: this.daterange[1],
+        },
+      }).then((response) => {
+        this.chartData2 = response.data.fileStatics;
+        this.drawminchart1();
+      });
+    },
+    selChange(val) {
+      if (val.target.value != "d") {
+        this.$axios({
+          method: "get",
+          url: "/pydata/home/getstatics/",
+          params: {
+            params: val.target.value,
+            time1: this.daterange[0],
+            time2: this.daterange[1],
+          },
+        }).then((response) => {
+          this.chartData2 = response.data.fileStatics;
+          this.drawminchart1();
+        });
+      }
+    },
     getBasedata() {
       this.$axios({
         method: "GET",

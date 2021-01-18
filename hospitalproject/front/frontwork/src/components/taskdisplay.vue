@@ -138,6 +138,8 @@
         <a-table-column>
           <template slot-scope="scope">
             <a-badge v-if="scope.type=='中标公告'||scope.type=='成交公告'" status="success" />
+            <a-badge v-else-if="scope.type=='公开招标公告'||scope.type=='单一来源公告和公示'" status="processing" />
+            <a-badge v-else status="default" />
           </template>
         </a-table-column>
         <a-table-column key="name" title="项目名称" data-index="name" :width="220" ellipsis="true"/>

@@ -32,4 +32,5 @@ urlpatterns = [
     path('pydata/downloadfile/',projects.downloadfiles),
     path('pydata/home/getBaseNum/',view.getbasenum),
     path('pydata/projects/getlistbycondition/',projects.getListByCondition),
+    path('pydata/home/getstatics/',view.getStaticsNum),
 ]
