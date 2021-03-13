@@ -13,15 +13,14 @@
           style="width: 270px"
           autosize
         ></el-input>
-        <a-button key="3"> 清空 </a-button>
+        <a-button key="3" @click="clear"> 清空 </a-button>
+        <a-button key="2" @click="popupCondition" > 更多条件 </a-button>
         <a-button key="1" type="primary" @click="query"> 查询 </a-button>
       </template>
-      <a-row></a-row>
     </a-page-header>
     <el-table
       :data.sync="dat"
       id="el-proj-list"
-      v-el-table-infinite-scroll="load"
       v-loading="loading"
       :height="tableheight"
       element-loading-text="拼命加载中"
@@ -86,6 +85,21 @@
         width="260"
       ></el-table-column>
     </el-table>
+    <el-pagination
+      style="padding-top: 5px; text-align: center"
+      layout="total, prev, pager, next"
+      @current-change="handleCurrentChange"
+      :page-size="perpagecount"
+      :total="total"
+    >
+    </el-pagination>
+    <a-drawer width="400" placement="right" :closeable="true" :visible="visible" @close="close" title="查询条件">
+      <a-form>
+        <a-form-item>
+          
+        </a-form-item>
+      </a-form>
+    </a-drawer>
   </div>
 </template>
 
@@ -94,44 +108,17 @@ export default {
   data() {
     return {
       currentPage: 1,
-      perpagecount: 15,
+      perpagecount: 30,
       input: "",
       radio2: "",
       dat: [],
       loading: false,
+      total: 0,
+      querymode: 0,
+      pageSize: 0,
       value2: "",
       tableheight: "",
-      pickerOptions: {
-        shortcuts: [
-          {
-            text: "最近一周",
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-          {
-            text: "最近一个月",
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-          {
-            text: "最近三个月",
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-        ],
-      },
+      visible: false,
     };
   },
   mounted: function () {
@@ -139,6 +126,17 @@ export default {
     this.getcliHeight();
   },
   methods: {
+    popupCondition(){
+      this.visible = true;
+    },
+    close(){
+      this.visible = false;
+    },
+    clear() {
+      this.input = "";
+      this.querymode = 1;
+      this.displayprojects();
+    },
     getcliHeight() {
       var that = this;
       that.tableheight = document.getElementById("el-proj-list").clientHeight;
@@ -146,14 +144,14 @@ export default {
 
     displayprojects() {
       var that = this;
-      console.log(document.getElementById("el-proj-list").clientHeight);
       this.$axios({
         method: "get",
         url: "/pydata/projects/getall/",
-        params: { page: 1, percount: 15 },
+        params: { page: 1, percount: 30 },
       }).then((resp) => {
-        that.currentPage = that.currentPage + 1;
-        that.dat = resp.data;
+        that.dat = resp.data.data;
+        that.total = resp.data.total;
+        that.pageSize = resp.data.totalpage;
       });
     },
     filterproj(value, row) {
@@ -164,35 +162,46 @@ export default {
     },
     query() {
       this.loading = true;
+      this.querymode = 1;
       var that = this;
       this.$axios({
         method: "get",
         url: "/pydata/projects/getlistbycondition/",
-        params: { taskid: this.input },
+        params: { condition: this.input, page: 1, percount: 30 },
       }).then((resp) => {
-        that.dat = []
-        resp.data.forEach((t) => {
+        that.dat = [];
+        that.total = resp.data.total;
+        that.pageSize = resp.data.totalpage;
+        resp.data.data.forEach((t) => {
           that.dat.push(t);
         });
         this.loading = false;
       });
     },
-    load() {
+
+    handleCurrentChange(val) {
       var that = this;
       this.loading = true;
-      this.$axios({
-        method: "get",
-        url: "/pydata/projects/getall/",
-        params: { page: this.currentPage, percount: 15 },
-      }).then((resp) => {
-        setTimeout(() => {
-          that.currentPage = that.currentPage + 1;
-          resp.data.forEach((element) => {
-            that.dat.push(element);
-          });
+      this.currentPage = val;
+      if (this.querymode == 0) {
+        this.$axios({
+          method: "get",
+          url: "/pydata/projects/getall/",
+          params: { page: this.currentPage, percount: 30 },
+        }).then((resp) => {
+          that.dat = resp.data.data;
           this.loading = false;
-        }, 500);
-      });
+        });
+      } else {
+        this.$axios({
+          method: "get",
+          url: "/pydata/projects/getlistbycondition/",
+          params: { condition: this.input, page: this.currentPage, percount: 30 },
+        }).then((resp) => {
+          that.dat = resp.data.data;
+          this.loading = false;
+        });
+      }
     },
   },
 };
@@ -202,6 +211,6 @@ export default {
   height: 70px;
 }
 #el-proj-list {
-  height: calc(100vh - 220px);
+  height: calc(100vh - 240px);
 }
 </style>

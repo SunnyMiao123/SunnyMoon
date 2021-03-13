@@ -1,1 +1,1 @@
-python3 /Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/manage.py runserver 127.0.0.1:8101
+python3 /Users/sunmiao/Documents/GitHub/SunnyMoon/hospitalproject/manage.py runserver 0.0.0.0:8101

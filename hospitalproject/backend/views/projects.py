@@ -15,19 +15,28 @@ import urllib.request
 """
 获取所有项目数据
 """
+
+
 def getAllProjects(request):
     client = pymongo.MongoClient('127.0.0.1', 27017)
     projects = client.get_database('data').get_collection('projects_new')
     page = int(request.GET['page'])-1
     percount = int(request.GET['percount'])
 
+    total = projects.count()
+    totalpage = int(projects.count()/percount) + 1
+
     lists = []
     for t in projects.find({}).skip(page*percount).limit(percount):
         lists.append({'taskid': t['taskid'], 'date': datetime.datetime.strftime(t['date'], '%Y-%m-%d'), 'province': t['province'],
-                      'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))), 
+                      'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))),
                       'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
-    fill = json.dumps(lists, default=json_util.default)
-    return HttpResponse(fill)
+    #fill = json.dumps(lists, default=json_util.default)
+    p = {'total':total,'totalpage':totalpage,'data':lists}
+
+    #print(json.dumps(p))
+    return HttpResponse(json.dumps(p,default=json_util.default))
+
 
 def getListByCondition(request):
     """
@@ -35,22 +44,32 @@ def getListByCondition(request):
     """
     client = pymongo.MongoClient('127.0.0.1', 27017)
     projects = client.get_database('data').get_collection('projects_new')
-    condition = request.GET['taskid']
-    print(condition)
-    retList= []
-
-    for t in projects.find({"$or":[{"taskid":condition},{"html":{'$regex':condition}}]}):
+    condition = request.GET['condition']
+    page = int(request.GET['page'])-1
+    percount = int(request.GET['percount'])
+    #print(condition)
+    retList = []
+    if page<= -1:
+        source = projects.find({"$or": [{"taskid": condition}, {"html": {'$regex': condition}}]})
+    else:
+        source = projects.find({"$or": [{"taskid": condition}, {"html": {'$regex': condition}}]}).skip(page*percount).limit(percount)
+    for t in source:
         retList.append({'taskid': t['taskid'], 'date': datetime.datetime.strftime(t['date'], '%Y-%m-%d'), 'province': t['province'],
-                      'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))), 
-                      'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
-    jsonStr= json.dumps(retList,default=json_util.default)
+                        'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))),
+                        'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
+   # jsonStr = json.dumps(retList, default=json_util.default)
+    total = source.count()
+    totalpage = int(total/percount)+1
+    p = {'total':total,'totalpage':totalpage,'data':retList}
 
-    return HttpResponse(jsonStr)
+    return HttpResponse(json.dumps(p,default=json_util.default))
 
 
 """
 下载文件
 """
+
+
 def downloadfiles(request):
     """
     下载文件
@@ -64,34 +83,60 @@ def downloadfiles(request):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3141.8 Safari/537.36'
     }
 
-
-    for item in projects.find({'taskid':taskid}):
-        if str(item['html']).find('附件',0,-1)>0:
+    for item in projects.find({
+        '$or': [
+            {
+                'type': '中标公告'
+            }, {
+                'type': '成交公告'
+            }
+        ],
+        'taskid': taskid
+    }):
+        if str(item['html']).find('附件', 0, -1) > 0:
            # print(item['projectid'],item['name'])
-            soup = BeautifulSoup(requests.get(item['url']).content,'lxml')
-            target = soup.findAll(attrs={'class':'bizDownload'})
+            soup = BeautifulSoup(requests.get(item['url']).content, 'lxml')
+            target = soup.findAll(attrs={'class': 'bizDownload'})
             for i in target:
-                response=requests.get(url='http://www.ccgp.gov.cn/oss/download?uuid={}'.format(i['id']),headers=headers)
-                #if response.status_code==200:
+                response = requests.get(
+                    url='http://www.ccgp.gov.cn/oss/download?uuid={}'.format(i['id']), headers=headers)
+                # if response.status_code==200:
                 print(response.status_code)
                 doc = response.content
-                print ('http://www.ccgp.gov.cn/oss/download?uuid={}'.format(i['id']))
+                print(
+                    'http://www.ccgp.gov.cn/oss/download?uuid={}'.format(i['id']))
 
-                path=os.path.curdir+'/docments/'+item['name']
-                if os.path.exists(path)==False:
+                path = os.path.curdir+'/docments/'+item['name']
+                if os.path.exists(path) == False:
                     os.makedirs(path)
                 dirs = path+'/'+i.text
-                with open(dirs,'wb') as t:
+                with open(dirs, 'wb') as t:
                     t.write(doc)
-            
+
     tasks = client.get_database('data').get_collection('tasks')
     tasks.update_one({'taskid': taskid}, {
-                     '$set': { "state": 'Finish'}})
+                     '$set': {"state": 'Finish'}})
     return HttpResponse('Success')
+
 
 def getProjectsNums(requests):
     """
     docstring
     """
-    
+
     return HttpResponse('Success')
+
+
+if __name__ == '__main__':
+    client = pymongo.MongoClient('127.0.0.1', 27017)
+    projects = client.get_database('data').get_collection('projects_new')
+
+    total = projects.count()
+    totalpage = int(total/15) + 1
+    lists = []
+    for t in projects.find({}).limit(15):
+        lists.append({'taskid': t['taskid'], 'date': datetime.datetime.strftime(t['date'], '%Y-%m-%d'), 'province': t['province'],
+                      'name': t['name'], 'cost': str(decimal128.Decimal128(str(t['cost'])).to_decimal().quantize(decimal.Decimal('0.00'))),
+                      'type': t['type'], 'region': t['region'], 'url': t['url'], 'projectid': t['projectid'], 'depart': t['depart'], 'agent': t['agent']})
+    p = {'total':total,'totalpage':totalpage,'data':json.dumps(lists, default=json_util.default)}
+    print(json.dumps(p))

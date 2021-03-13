@@ -234,9 +234,9 @@ export default {
       this.$axios({
         method:"get",
         url:"pydata/projects/getlistbycondition/",
-        params:{'taskid':id}
+        params:{'condition':id,'page':0,'percount':1}
       }).then(response=>{
-        this.tplist=response.data;
+        this.tplist=response.data.data;
       })
     },
 
